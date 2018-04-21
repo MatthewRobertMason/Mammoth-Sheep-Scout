@@ -131,7 +131,7 @@ class Game{
     }
 
     newCity(x, y){
-        let graphic = new THREE.TextureLoader().load("graphics/white.png")
+        let graphic = new THREE.TextureLoader().load("Graphics/white.png")
         let material = new THREE.SpriteMaterial({map: graphic, color: 0xffffff});
         let sprite = new THREE.Sprite(material)
         this.scene.add(sprite)
@@ -153,7 +153,7 @@ class Game{
 
     newPrize(x){
         let y = 0
-        let graphic = new THREE.TextureLoader().load("graphics/white.png")
+        let graphic = new THREE.TextureLoader().load("Graphics/white.png")
         let material = new THREE.SpriteMaterial({map: graphic, color: 0xffffff});
         let sprite = new THREE.Sprite(material)
         this.scene.add(sprite)
