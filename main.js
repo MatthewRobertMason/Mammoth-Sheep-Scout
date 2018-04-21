@@ -40,31 +40,33 @@ class MovingThing{
     }
 
     update(game, delta){
-        // if we are leading a new trailing sprite  create it
-        this.trailSkipCounter = (this.trailSkipCounter + 1) % this.trailFrameSkip
-        if(this.trailSkipCounter == 0 || this.trailSkipCounter != this.trailSkipCounter) {
-            let ob = this.sprite.clone();
-            ob.material = ob.material.clone()
-            ob.material.transparent = true
-            this.trail.push(ob)
-            game.scene.add(ob)
+        if(this.trail){
+            // if we are leading a new trailing sprite  create it
+            this.trailSkipCounter = (this.trailSkipCounter + 1) % this.trailFrameSkip
+            if(this.trailSkipCounter == 0 || this.trailSkipCounter != this.trailSkipCounter) {
+                let ob = this.sprite.clone();
+                ob.material = ob.material.clone()
+                ob.material.transparent = true
+                this.trail.push(ob)
+                game.scene.add(ob)
+            }
+
+            // Fade the trail sprites
+            for(let sprite of this.trail){
+                sprite.position.y -= 0.001
+                sprite.material.opacity -= delta / this.trailTime
+            }
+
+            // Remove extra trail sprites
+            while(this.trail.length > this.trailMax || (this.trail.length > 0 && this.trail[0].material.opacity <= 0)){
+                let ob = this.trail.shift()
+                game.scene.remove(ob)
+            }
         }
 
         // update the actual position
         this.x += this.vx * delta
         this.y += this.vy * delta
-
-        // Fade the trail sprites
-        for(let sprite of this.trail){
-            sprite.position.y -= 0.001
-            sprite.material.opacity -= delta / this.trailTime
-        }
-
-        // Remove extra trail sprites
-        if(this.trail.length > this.trailMax){
-            let ob = this.trail.shift()
-            game.scene.remove(ob)
-        }
     }
 }
 
@@ -96,7 +98,6 @@ class Rock extends MovingThing {
         this.vx = velocity.x;
         this.vy = velocity.z;
 
-        //this.trail.trailFrameSkip = 10
         this.trailTime = 0.5
     }
 }
@@ -115,20 +116,22 @@ class Missile extends MovingThing {
         velocity.normalize()
         velocity.multiplyScalar(0.2)
 
-        this.sprite.material.rotation = new THREE.Vector2(velocity.x, velocity.z).angle()
+        this.sprite.material.rotation = -(new THREE.Vector2(velocity.x, velocity.z).angle()) - Math.PI/2
         this.vx = velocity.x;
         this.vy = velocity.z;
 
-
-        this.trailTime = 3
+        this.trail = null
+        this.trailTime = 0.1
     }
 }
 
 class Game{
     constructor(container){
         // Initialize the graphics library
-        this.width = 1280;
-        this.height = 720;
+        this.aspect = 1
+        this.width = 800;
+        this.height = this.width/this.aspect;
+
         this.container = container;
         this.container.css({
             position: 'absolute',
@@ -146,7 +149,6 @@ class Game{
 
         this.scene = new THREE.Scene();
 
-        let aspect = (this.width/this.height)
         this.camera = new THREE.OrthographicCamera(-0.5, 0.5, 0.5, -0.5, 0, 1100);
         this.camera.position.x = 0.5
         this.camera.position.y = 5
@@ -212,6 +214,7 @@ class Game{
 
         // Bind events
         this.container.mousemove(this.onMouseMove.bind(this))
+        this.container.mousedown(this.onMouseDown.bind(this))
     }
 
     newCity(x, y){
@@ -259,16 +262,17 @@ class Game{
 
         let start = this.cannon.position.clone()
         start.x += direction.x * 0.04
+        start.y = 0
         start.z += direction.y * 0.04
         let end = new THREE.Vector3(x, 0, y)
 
-        let graphic = new THREE.TextureLoader().load("Graphics/white.png")
+        let graphic = new THREE.TextureLoader().load("Graphics/Rocket.png")
         let material = new THREE.SpriteMaterial({map: graphic, color: 0xffffff});
         let sprite = new THREE.Sprite(material)
         this.scene.add(sprite)
         sprite.position.copy(start)
-        sprite.scale.x = 1/100
-        sprite.scale.y = 1/100
+        sprite.scale.x = 1/40
+        sprite.scale.y = 1/40
 
         let rock = new Missile({
             start: start,
@@ -368,6 +372,14 @@ class Game{
         let pointer = this.cannonDirection()
 
         this.cannon.material.rotation = -pointer.angle() - Math.PI/2
+    }
+
+    onMouseDown(event){
+        if(event.button != 0) return;
+
+        let x = event.offsetX / this.width
+        let y = event.offsetY / this.height
+        this.newMissile(x, y)
     }
 
     // Draw the current scene. delta in ms
