@@ -10,6 +10,9 @@ function arg(params, name, value){
     return params[name]
 }
 
+function distance(a, b){
+    return Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2))
+}
 
 class MovingThing{
     constructor(params){
@@ -24,6 +27,7 @@ class MovingThing{
         this.trailSkipCounter = 0
         this.trailFrameSkip = 0
         this.trail = []
+        this.distance = 0
     }
 
     get x(){ return this._x }
@@ -37,6 +41,15 @@ class MovingThing{
     set y(value){
         this._y = value
         this.sprite.position.z = value
+    }
+
+    stop(game){
+        game.scene.remove(this.sprite)
+        if(this.trail){
+            for(let obj of this.trail){
+                game.scene.remove(obj)
+            }
+        }
     }
 
     update(game, delta){
@@ -67,6 +80,7 @@ class MovingThing{
         // update the actual position
         this.x += this.vx * delta
         this.y += this.vy * delta
+        this.distance += Math.sqrt(Math.pow(this.vx * delta, 2) + Math.pow(this.vy * delta, 2))
     }
 }
 
@@ -75,12 +89,11 @@ class Prize extends MovingThing {
     constructor(params){
         super(params)
 
-        this.trailTime = 3
+        this.trail = null
     }
 }
 
-
-class Rock extends MovingThing {
+class Targeted extends MovingThing {
     constructor(params){
         let start = arg(params, 'start')
         params.x = start.x
@@ -91,35 +104,32 @@ class Rock extends MovingThing {
 
         let velocity = this.end.clone()
         velocity.sub(start)
+        this.goalDistance = velocity.length()
         velocity.normalize()
         velocity.multiplyScalar(0.2)
 
-        this.sprite.material.rotation = -(new THREE.Vector2(velocity.x, velocity.z).angle()) + Math.PI/2
+        this.sprite.material.rotation = -(new THREE.Vector2(velocity.x, velocity.z).angle()) + arg(params, 'rotation', 0)
         this.vx = velocity.x;
         this.vy = velocity.z;
+    }
 
+    get done(){
+        return this.distance > this.goalDistance
+    }
+}
+
+class Rock extends Targeted {
+    constructor(params){
+        params.rotation = Math.PI/2
+        super(params)
         this.trailTime = 0.5
     }
 }
 
-class Missile extends MovingThing {
+class Missile extends Targeted {
     constructor(params){
-        let start = arg(params, 'start')
-        params.x = start.x
-        params.y = start.z
+        params.rotation = -Math.PI/2
         super(params)
-
-        this.end = arg(params, 'end')
-
-        let velocity = this.end.clone()
-        velocity.sub(start)
-        velocity.normalize()
-        velocity.multiplyScalar(0.2)
-
-        this.sprite.material.rotation = -(new THREE.Vector2(velocity.x, velocity.z).angle()) - Math.PI/2
-        this.vx = velocity.x;
-        this.vy = velocity.z;
-
         this.trail = null
         this.trailTime = 0.1
     }
@@ -127,6 +137,8 @@ class Missile extends MovingThing {
 
 class Game{
     constructor(container){
+        this.hitZone = 0.08
+
         // Initialize the graphics library
         this.aspect = 1
         this.width = 800;
@@ -196,21 +208,20 @@ class Game{
         this.mouse = new THREE.Vector2(0.5, 0.5)
 
         // Add the game objects
-        this.moving = []
-        this.cities = []
+        this.moving = new Set()
+        this.cities = new Set()
         this.newCity(0.1, 0.9)
         this.newCity(0.3, 0.9)
         this.newCity(0.7, 0.9)
         this.newCity(0.9, 0.9)
 
-        this.rocks = []
+        this.rocks = new Set()
         this.newRock()
 
-        this.prizes = []
+        this.prizes = new Set()
         this.newPrize(0.1)
 
-        this.missiles = []
-        this.newMissile(0.5, 0.5)
+        this.missiles = new Set()
 
         // Bind events
         this.container.mousemove(this.onMouseMove.bind(this))
@@ -219,15 +230,17 @@ class Game{
 
     newCity(x, y){
 
-        // {
-        //     let geometry = new THREE.BoxGeometry( 0.1, 0.1, 0.1 );
-        //     let material = new THREE.MeshNormalMaterial();
-        //     let cube = new THREE.Mesh(geometry, material );
-        //     cube.position.x = 0.5
-        //     cube.position.y = -150
-        //     cube.position.z = 0.1
-        //     this.scene.add(cube)
-        // }
+        let zone_graphic = new THREE.TextureLoader().load("Graphics/White.png")
+        let zone_material = new THREE.SpriteMaterial({map: zone_graphic, color: 0x222222});
+        let zone = new THREE.Sprite(zone_material)
+        this.scene.add(zone)
+        zone.center.y = 0
+        zone.position.x = x
+        zone.position.y = -0.9
+        zone.position.z = y - 0.12
+        zone.scale.x = 1/14
+        zone.scale.y = this.hitZone
+
 
         let graphic = new THREE.TextureLoader().load("Graphics/City.png")
         let material = new THREE.SpriteMaterial({map: graphic, color: 0xffffff});
@@ -240,10 +253,11 @@ class Game{
         sprite.scale.x = 1/10
         sprite.scale.y = 1/10
 
-        this.cities.push({
+        this.cities.add({
             x: x,
             y: y,
-            sprite: sprite
+            sprite: sprite,
+            zone: zone
         })
     }
 
@@ -274,14 +288,14 @@ class Game{
         sprite.scale.x = 1/40
         sprite.scale.y = 1/40
 
-        let rock = new Missile({
+        let rocket = new Missile({
             start: start,
             end: end,
             sprite: sprite,
         })
 
-        this.rocks.push(rock)
-        this.moving.push(rock)
+        this.missiles.add(rocket)
+        this.moving.add(rocket)
 
     }
 
@@ -320,18 +334,19 @@ class Game{
             sprite: sprite,
         })
 
-        this.rocks.push(rock)
-        this.moving.push(rock)
+        this.rocks.add(rock)
+        this.moving.add(rock)
     }
 
     newPrize(x){
         let y = 0
-        let graphic = new THREE.TextureLoader().load("Graphics/white.png")
+        let graphic = new THREE.TextureLoader().load("Graphics/AirDropCrate.png")
         let material = new THREE.SpriteMaterial({map: graphic, color: 0xffffff});
         let sprite = new THREE.Sprite(material)
         this.scene.add(sprite)
         sprite.position.x = x
         sprite.position.z = y
+        sprite.position.y = 0.9
         sprite.scale.x = 1/20
         sprite.scale.y = 1/20
 
@@ -341,8 +356,16 @@ class Game{
             sprite: sprite
         })
 
-        this.moving.push(prize)
-        this.prizes.push(prize)
+        this.moving.add(prize)
+        this.prizes.add(prize)
+    }
+
+    explode(x, y){
+        console.warn("Make an explosion")
+    }
+
+    hitCity(city){
+        console.warn("Something hit a city")
     }
 
     // Update the game state. delta in ms
@@ -353,14 +376,48 @@ class Game{
         }
 
         // Check for the missiles reaching the destination
-
+        for(let obj of this.missiles){
+            if(obj.done){
+                obj.stop(this);
+                this.explode(obj.x, obj.y)
+                this.moving.delete(obj)
+                this.missiles.delete(obj);
+            }
+        }
 
         // Check for metiors hitting
+        for(let obj of this.rocks){
+            // Check if hit city with good javascript programming(TM)
+            let [offset, city] = Array.from(this.cities).map(city => [distance(city, obj), city]).reduce((a, b) => (a[0] < b[0] ? a : b))
 
-        // Check for supplies in the good zone
-        // TODO EXTRA highlight when the key should be pressed
+            if(offset < 0.05){
+                obj.stop(this);
+                this.hitCity(city);
+                this.moving.delete(obj)
+                this.rocks.delete(obj);
+            }
 
-        // Check for supplies hitting cities
+            // Missed
+            else if(obj.done){
+                obj.stop(this);
+                this.moving.delete(obj)
+                this.rocks.delete(obj);
+            }
+        }
+
+        // Check for supplies
+        for(let obj of this.prizes){
+            // Check for supplies in the good zone
+            // TODO EXTRA highlight when the key should be pressed
+
+            // check for the bad zone
+            if(obj.y > 0.8){
+                this.hitCity(Array.from(this.cities).find(city => city.x == obj.x))
+                obj.stop(this)
+                this.prizes.delete(obj)
+                this.moving.delete(obj)
+            }
+        }
     }
 
     onMouseMove(event){
