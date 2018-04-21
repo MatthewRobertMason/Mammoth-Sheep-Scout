@@ -78,6 +78,36 @@ class Prize extends MovingThing {
 }
 
 
+class Rock extends MovingThing {
+    constructor(params){
+        let start = arg(params, 'start')
+        params.x = start.x
+        params.y = start.z
+        super(params)
+
+        this.end = arg(params, 'end')
+
+        let velocity = this.end.clone()
+        velocity.sub(start)
+        velocity.normalize()
+        velocity.multiplyScalar(0.2)
+
+        this.vx = velocity.x;
+        this.vy = velocity.z;
+
+        this.trailTime = 1.5
+    }
+}
+
+class Missile extends MovingThing {
+    constructor(params){
+        super(params)
+
+        this.trailTime = 3
+    }
+}
+
+
 const frustumSize = 1;
 
 class Game{
@@ -106,14 +136,19 @@ class Game{
         this.scene = new THREE.Scene();
         this.scene.add(this.camera);
 
+        // Add light
         var ambientLight = new THREE.AmbientLight( 0xeeeeee );
         this.scene.add(ambientLight);
 
+        // Add grid while developing
         var gridHelper = new THREE.GridHelper(1, 10);
         gridHelper.position.x = 0.5
         gridHelper.position.z = 0.5 - 0.1
         gridHelper.position.y = -1000
         this.scene.add(gridHelper);
+
+        // Add the cannon
+
 
         // Add the game objects
         this.moving = []
@@ -128,6 +163,7 @@ class Game{
         this.newPrize(0.1)
 
         this.missiles = []
+        this.newMissile(0.5, 0.5)
     }
 
     newCity(x, y){
@@ -147,8 +183,47 @@ class Game{
         })
     }
 
+    newMissile(){
+        console.warn('make missile')
+    }
+
     newRock(){
-        console.warn("Didn't make a rock")
+
+        let depth = 0
+
+        if(Math.random() < 0){
+            var start = new THREE.Vector3(
+                Math.random() < 0.5 ? 0 : 1,
+                depth,
+                Math.random() * 0.5
+            );
+        } else {
+            var start = new THREE.Vector3(
+                Math.random(),
+                depth,
+                0
+            );
+        }
+
+        var end = new THREE.Vector3(Math.random(), depth, 1)
+
+
+        let graphic = new THREE.TextureLoader().load("Graphics/white.png")
+        let material = new THREE.SpriteMaterial({map: graphic, color: 0xffffff});
+        let sprite = new THREE.Sprite(material)
+        this.scene.add(sprite)
+        sprite.position.copy(start)
+        sprite.scale.x = 1/10
+        sprite.scale.y = 1/10
+
+        let rock = new Rock({
+            start: start,
+            end: end,
+            sprite: sprite,
+        })
+
+        this.rocks.push(rock)
+        this.moving.push(rock)
     }
 
     newPrize(x){
@@ -180,6 +255,7 @@ class Game{
         }
 
         // Check for crashes
+
     }
 
     // Draw the current scene. delta in ms
