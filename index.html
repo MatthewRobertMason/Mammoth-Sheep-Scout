@@ -17,10 +17,22 @@
 
     <script>
       // Launch an instance of the game with the tag above as its connection to the page
-      new Game($('#main'))
+      let game = new Game($('#main'))
+      var lastTimestamp = 0
       var running = true;
-      
 
+      function render(timestamp){
+        try{
+          window.requestAnimationFrame(render)
+          let delta = (timestamp - lastTimestamp)/1000
+          lastTimestamp = timestamp
+          game.update(delta)
+          game.draw(delta)
+        } catch (error){
+          console.error(error)
+        }
+      }
+      render(0)
     </script>
   </body>
 </html>
