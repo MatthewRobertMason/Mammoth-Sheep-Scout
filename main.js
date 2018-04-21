@@ -56,7 +56,7 @@ class MovingThing{
 
         // Fade the trail sprites
         for(let sprite of this.trail){
-            sprite.position.y -= 0.1
+            sprite.position.y -= 0.001
             sprite.material.opacity -= delta / this.trailTime
         }
 
@@ -101,20 +101,31 @@ class Rock extends MovingThing {
 
 class Missile extends MovingThing {
     constructor(params){
+        let start = arg(params, 'start')
+        params.x = start.x
+        params.y = start.z
         super(params)
+
+        this.end = arg(params, 'end')
+
+        let velocity = this.end.clone()
+        velocity.sub(start)
+        velocity.normalize()
+        velocity.multiplyScalar(0.2)
+
+        this.vx = velocity.x;
+        this.vy = velocity.z;
+
 
         this.trailTime = 3
     }
 }
 
-
-const frustumSize = 1;
-
 class Game{
     constructor(container){
         // Initialize the graphics library
-        this.width = 1368;
-        this.height = 768;
+        this.width = 1280;
+        this.height = 720;
         this.container = container;
         this.container.css({
             position: 'absolute',
@@ -124,16 +135,21 @@ class Game{
             height: this.height + 'px'
         })
 
-        this.renderer = new THREE.WebGLRenderer();
+        this.renderer = new THREE.WebGLRenderer({
+            antialias: true
+        });
         this.renderer.setSize(this.width, this.height);
         this.container.append(this.renderer.domElement)
 
-        this.camera = new THREE.OrthographicCamera(-0.5, 0.5, 0.5, -0.5, 1, 1100);
+        this.scene = new THREE.Scene();
+
+        let aspect = (this.width/this.height)
+        this.camera = new THREE.OrthographicCamera(-0.5, 0.5, 0.5, -0.5, 0, 1100);
         this.camera.position.x = 0.5
         this.camera.position.y = 5
         this.camera.position.z = 0.5
         this.camera.lookAt(new THREE.Vector3(0.5, 0, 0.5))
-        this.scene = new THREE.Scene();
+        //this.camera.updateProjectionMatrix()
         this.scene.add(this.camera);
 
         // Add light
@@ -141,20 +157,46 @@ class Game{
         this.scene.add(ambientLight);
 
         // Add grid while developing
-        var gridHelper = new THREE.GridHelper(1, 10);
+        var gridHelper = new THREE.GridHelper(2, 20);
         gridHelper.position.x = 0.5
-        gridHelper.position.z = 0.5 - 0.1
-        gridHelper.position.y = -1000
+        gridHelper.position.z = 0.5
+        gridHelper.position.y = -1
         this.scene.add(gridHelper);
 
         // Add the cannon
-
+        {
+            let graphic = new THREE.TextureLoader().load("Graphics/GunBase.png")
+            let material = new THREE.SpriteMaterial({map: graphic, color: 0xffffff});
+            let sprite = new THREE.Sprite(material)
+            this.scene.add(sprite)
+            sprite.center.y = 0
+            sprite.position.x = 0.5
+            sprite.position.y = 0.5
+            sprite.position.z = 0.9
+            sprite.scale.x = 1/10
+            sprite.scale.y = 1/10
+        }
+        {
+            let graphic = new THREE.TextureLoader().load("Graphics/GunTurret.png")
+            let material = new THREE.SpriteMaterial({map: graphic, color: 0xffffff});
+            let sprite = new THREE.Sprite(material)
+            this.scene.add(sprite)
+            sprite.position.x = 0.5
+            sprite.position.y = 0.51
+            sprite.position.z = 0.85
+            sprite.scale.x = 1/10
+            sprite.scale.y = 1/10
+            this.cannon = sprite
+        }
+        this.mouse = new THREE.Vector2(0.5, 0.5)
 
         // Add the game objects
         this.moving = []
         this.cities = []
-        this.newCity(0.8, 0.9)
-        this.newCity(0.2, 0.9)
+        this.newCity(0.1, 0.9)
+        this.newCity(0.3, 0.9)
+        this.newCity(0.7, 0.9)
+        this.newCity(0.9, 0.9)
 
         this.rocks = []
         this.newRock()
@@ -164,14 +206,30 @@ class Game{
 
         this.missiles = []
         this.newMissile(0.5, 0.5)
+
+        // Bind events
+        this.container.mousemove(this.onMouseMove.bind(this))
     }
 
     newCity(x, y){
-        let graphic = new THREE.TextureLoader().load("Graphics/white.png")
+
+        // {
+        //     let geometry = new THREE.BoxGeometry( 0.1, 0.1, 0.1 );
+        //     let material = new THREE.MeshNormalMaterial();
+        //     let cube = new THREE.Mesh(geometry, material );
+        //     cube.position.x = 0.5
+        //     cube.position.y = -150
+        //     cube.position.z = 0.1
+        //     this.scene.add(cube)
+        // }
+
+        let graphic = new THREE.TextureLoader().load("Graphics/City.png")
         let material = new THREE.SpriteMaterial({map: graphic, color: 0xffffff});
         let sprite = new THREE.Sprite(material)
         this.scene.add(sprite)
+        sprite.center.y = 0
         sprite.position.x = x
+        sprite.position.y = 0.1
         sprite.position.z = y
         sprite.scale.x = 1/10
         sprite.scale.y = 1/10
@@ -183,8 +241,41 @@ class Game{
         })
     }
 
-    newMissile(){
-        console.warn('make missile')
+    cannonDirection(){
+        let pointer = this.mouse.clone()
+        pointer.x -= this.cannon.position.x;
+        pointer.y -= this.cannon.position.z;
+        pointer.normalize()
+        return pointer
+    }
+
+    newMissile(x, y){
+
+        let direction = this.cannonDirection()
+        direction.normalize()
+
+        let start = this.cannon.position.clone()
+        start.x += direction.x * 0.04
+        start.z += direction.y * 0.04
+        let end = new THREE.Vector3(x, 0, y)
+
+        let graphic = new THREE.TextureLoader().load("Graphics/white.png")
+        let material = new THREE.SpriteMaterial({map: graphic, color: 0xffffff});
+        let sprite = new THREE.Sprite(material)
+        this.scene.add(sprite)
+        sprite.position.copy(start)
+        sprite.scale.x = 1/100
+        sprite.scale.y = 1/100
+
+        let rock = new Missile({
+            start: start,
+            end: end,
+            sprite: sprite,
+        })
+
+        this.rocks.push(rock)
+        this.moving.push(rock)
+
     }
 
     newRock(){
@@ -254,8 +345,26 @@ class Game{
             obj.update(this, delta)
         }
 
-        // Check for crashes
+        // Check for the missiles reaching the destination
 
+
+        // Check for metiors hitting
+
+        // Check for supplies in the good zone
+        // TODO EXTRA highlight when the key should be pressed
+
+        // Check for supplies hitting cities
+    }
+
+    onMouseMove(event){
+        let x = event.offsetX / this.width
+        let y = event.offsetY / this.height
+
+        let mouse = new THREE.Vector2(x, y)
+        this.mouse = mouse;
+        let pointer = this.cannonDirection()
+
+        this.cannon.material.rotation = -pointer.angle() - Math.PI/2
     }
 
     // Draw the current scene. delta in ms
