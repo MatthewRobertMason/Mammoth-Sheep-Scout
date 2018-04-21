@@ -92,10 +92,12 @@ class Rock extends MovingThing {
         velocity.normalize()
         velocity.multiplyScalar(0.2)
 
+        this.sprite.material.rotation = -(new THREE.Vector2(velocity.x, velocity.z).angle()) + Math.PI/2
         this.vx = velocity.x;
         this.vy = velocity.z;
 
-        this.trailTime = 1.5
+        //this.trail.trailFrameSkip = 10
+        this.trailTime = 0.5
     }
 }
 
@@ -113,6 +115,7 @@ class Missile extends MovingThing {
         velocity.normalize()
         velocity.multiplyScalar(0.2)
 
+        this.sprite.material.rotation = new THREE.Vector2(velocity.x, velocity.z).angle()
         this.vx = velocity.x;
         this.vy = velocity.z;
 
@@ -280,7 +283,7 @@ class Game{
 
     newRock(){
 
-        let depth = 0
+        let depth = 0.11
 
         if(Math.random() < 0){
             var start = new THREE.Vector3(
@@ -299,13 +302,13 @@ class Game{
         var end = new THREE.Vector3(Math.random(), depth, 1)
 
 
-        let graphic = new THREE.TextureLoader().load("Graphics/white.png")
+        let graphic = new THREE.TextureLoader().load("Graphics/Fireball.png")
         let material = new THREE.SpriteMaterial({map: graphic, color: 0xffffff});
         let sprite = new THREE.Sprite(material)
         this.scene.add(sprite)
         sprite.position.copy(start)
-        sprite.scale.x = 1/10
-        sprite.scale.y = 1/10
+        sprite.scale.x = 1/20
+        sprite.scale.y = 1/20
 
         let rock = new Rock({
             start: start,
