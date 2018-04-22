@@ -12,7 +12,13 @@ var Music = [
 ];
 
 var SongNames = [
-    "Gregorian Chant?"
+    "Exciting Trailer",
+    "Gregorian Chant",
+    "Iron Bacon",
+    "Meatball Parade",
+    "Mega Hyper Ultrastorm",
+    "Motherlode",
+    "Pump",
 ]
 
 try {
