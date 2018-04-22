@@ -418,6 +418,7 @@ class Game{
             JSON.parse(JSON.stringify(this.audioData.nodes.low)),
             JSON.parse(JSON.stringify(this.audioData.nodes.band)),
             JSON.parse(JSON.stringify(this.audioData.nodes.high)),
+            JSON.parse(JSON.stringify(this.audioData.nodes.lowshelf)),
             []
         ]
 
