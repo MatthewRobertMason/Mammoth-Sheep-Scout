@@ -28,8 +28,6 @@ try {
     audioVolumeNode = audioContext.createGain();
     audioVolumeNode.gain.value = 0.1; // default to 10% VolumeSliderChange
     audioVolumeNode.connect(audioContext.destination);
-
-
 }
 catch(e) {
     alert('Web Audio API is not supported in this browser');
@@ -131,7 +129,38 @@ function PlaySound(buffer) {
     setInterval(test, 1000)
 }
 
-
 function GetCurrentAudioTimestamp(){
     return audioContext.getOutputTimestamp().contextTime;
+}
+
+// passtype can be highpass, lowpass, bandpass or others as listed in the API
+// but we probably want one of the ones listed
+function filterMusicData(buffer, passType, callback)
+{
+    // Create offline context
+    var offlineContext = new OfflineAudioContext(1, buffer.length, buffer.sampleRate);
+
+    // Create buffer source
+    var source = offlineContext.createBufferSource();
+    source.buffer = buffer;
+
+    // Create filter
+    var filter = offlineContext.createBiquadFilter();
+    filter.type = passType;
+
+    // Pipe the song into the filter, and the filter into the offline context
+    source.connect(filter);
+    filter.connect(offlineContext.destination);
+
+    // Schedule the song to start playing at time:0
+    source.start(0);
+
+    // Render the song
+    offlineContext.startRendering()
+
+    // Act on the result
+    offlineContext.oncomplete = function(e) {
+        // Filtered buffer!
+        if(callback) callback(e.renderedBuffer)
+    };
 }
