@@ -13,13 +13,48 @@
     <script src='main.js'></script>
     <script src='sprites.js'></script>
     <script src='audio.js'></script>
+
+    <style>
+      #menu {
+        border: 1px solid black;
+        padding: 5px;
+        margin: 5px;
+      }
+    </style>
   </head>
   <body>
 
     <div id='main'></div>
 
+    <div id='menu'>
+
+      <h2>Title</h2>
+
+      <h4>For LDJAM 41: Combine 2 Incompatable Genres</h4>
+
+
+      Song: <select id='songSelect'></select>
+      <button onClick='submitMenu()'>Start</button>
+    </div>
+
     <script>
-      function start(){
+
+      function menu(){
+        $('#menu').css({display: 'block'})
+        let select = $('#songSelect')
+        for(let ii = 0; ii < Music.length; ii++){
+          let file = Music[ii];
+          let name = SongNames[ii];
+          $('<option value="' + file + '">' + name + '</option>').appendTo(select);
+        }
+      }
+      $(menu)
+
+      function submitMenu(){
+        startLoadingLevel($('#songSelect').val())
+      }
+
+      function startLevel(){
         let stats = new Stats()
         document.body.appendChild(stats.dom);
         $(stats.dom).css({
@@ -49,24 +84,32 @@
       }
 
 
-      {
-        let domReady = false
+      function startLoadingLevel(path){
+
+        $('#menu').css({display: 'none'})
+
+        console.warn("Show loading screen")
+
         let spritesReady = false
-        let audioReady = true
+        let audioReady = false
+        let audioData = null
 
         function maybeStart(){
-          if(domReady && spritesReady && audioReady) start()
+          if(spritesReady && audioReady){
+            console.warn("hide loading screen")
+            startLevel(audioData)
+          }
         }
+
+        GetMusic(path, (data) => {
+          audioData = data
+          audioReady = true;
+          maybeStart();
+        })
 
         // Ask three to load the graphics
         LoadAllSprites(() => {
           spritesReady = true;
-          maybeStart()
-        })
-
-        // Wait for jquery to say the dom is loaded
-        $(() => {
-          domReady = true;
           maybeStart()
         })
       }

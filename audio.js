@@ -11,6 +11,10 @@ var Music = [
     "Audio/Pump.mp3"
 ];
 
+var SongNames = [
+    "Gregorian Chant?"
+]
+
 try {
     window.AudioContext = window.AudioContext||window.webkitAudioContext;
     audioContext = new AudioContext();
@@ -19,7 +23,7 @@ catch(e) {
     alert('Web Audio API is not supported in this browser');
 }
 
-GetMusic(Music[3]);
+// GetMusic(Music[3]);
 
 function musicLoaded(){
   getPeaksAtThreshold(loadedMusic, 0.95);
@@ -40,7 +44,7 @@ function getPeaksAtThreshold(data, threshold) {
     return peaksArray;
 }
 
-function GetMusic(url){
+function GetMusic(url, callback){
     var request = new XMLHttpRequest();
     request.open('GET', url, true);
     request.responseType = 'arraybuffer';
@@ -50,6 +54,8 @@ function GetMusic(url){
         audioContext.decodeAudioData(request.response, function(buffer) {
             loadedMusic = buffer;
             console.log("Music Loaded");
+            if(callback) callback(loadedMusic)
+            // PlaySound(loadedMusic);
       });
     }
     request.send();

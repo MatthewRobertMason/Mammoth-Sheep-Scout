@@ -317,7 +317,7 @@ class Game{
 
         // Add the cannon
         {
-            let graphic = new THREE.TextureLoader().load("Graphics/GunBase.png")
+            let graphic = Sprites.get("Graphics/GunBase.png")
             let material = new THREE.SpriteMaterial({map: graphic, color: 0xffffff});
             let sprite = new THREE.Sprite(material)
             this.scene.add(sprite)
@@ -329,7 +329,7 @@ class Game{
             sprite.scale.y = 1/10
         }
         {
-            let graphic = new THREE.TextureLoader().load("Graphics/GunTurret.png")
+            let graphic = Sprites.get("Graphics/GunTurret.png")
             let material = new THREE.SpriteMaterial({map: graphic, color: 0xffffff});
             let sprite = new THREE.Sprite(material)
             this.scene.add(sprite)
@@ -372,7 +372,7 @@ class Game{
 
     newCity(x, y){
 
-        let zone_graphic = new THREE.TextureLoader().load("Graphics/Frame.png")
+        let zone_graphic = Sprites.get("Graphics/Frame.png")
         let zone_material = new THREE.SpriteMaterial({map: zone_graphic, color: 0xFFAAAA});
         let zone = new THREE.Sprite(zone_material)
         this.scene.add(zone)
@@ -384,7 +384,7 @@ class Game{
         zone.scale.y = this.hitZone
 
 
-        let graphic = new THREE.TextureLoader().load("Graphics/City.png")
+        let graphic = Sprites.get("Graphics/City.png")
         let material = new THREE.SpriteMaterial({map: graphic, color: 0xffffff});
         let sprite = new THREE.Sprite(material)
         this.scene.add(sprite)
@@ -428,7 +428,7 @@ class Game{
         start.z += direction.y * 0.04
         let end = new THREE.Vector3(x, 0, y)
 
-        let graphic = new THREE.TextureLoader().load("Graphics/Rocket.png")
+        let graphic = Sprites.get("Graphics/Rocket.png")
         let material = new THREE.SpriteMaterial({map: graphic, color: 0xffffff});
         let sprite = new THREE.Sprite(material)
         this.scene.add(sprite)
@@ -469,7 +469,7 @@ class Game{
         var end = new THREE.Vector3(Math.random(), depth, 1)
 
 
-        let graphic = new THREE.TextureLoader().load("Graphics/Fireball.png")
+        let graphic = Sprites.get("Graphics/Fireball.png")
         let material = new THREE.SpriteMaterial({map: graphic, color: 0xffffff});
         let sprite = new THREE.Sprite(material)
         this.scene.add(sprite)
@@ -491,7 +491,7 @@ class Game{
     newPrize(index){
         let x = this.cities[index].x
         let y = 0
-        let graphic = new THREE.TextureLoader().load("Graphics/AirDropCrate.png")
+        let graphic = Sprites.get("Graphics/AirDropCrate.png")
         let material = new THREE.SpriteMaterial({map: graphic, color: 0xffffff});
         let sprite = new THREE.Sprite(material)
         this.scene.add(sprite)
@@ -549,16 +549,16 @@ class Game{
         console.log(city.health, damage)
 
         if(before > 0.66 && city.health <= 0.66){
-            city.sprite.material.map = new THREE.TextureLoader().load("Graphics/City_1.png")
+            city.sprite.material.map = Sprites.get("Graphics/City_1.png")
         }
 
         if(before > 0.33 && city.health <= 0.33){
-            city.sprite.material.map = new THREE.TextureLoader().load("Graphics/City_2.png")
+            city.sprite.material.map = Sprites.get("Graphics/City_2.png")
         }
 
         if(city.health <= 0){
             city.active = false
-            city.sprite.material.map = new THREE.TextureLoader().load("Graphics/City_Fallen.png")
+            city.sprite.material.map = Sprites.get("Graphics/City_Fallen.png")
         }
     }
 
