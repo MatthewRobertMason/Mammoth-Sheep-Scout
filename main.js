@@ -180,6 +180,8 @@ class Game{
         this.rockSpeed = 0.1
         this.missileSpeed = 0.4
         this.explosionRadius = 0.05
+        this.rockets = 40
+        this.prizeSize = 5
 
         // Initialize the graphics library
         this.aspect = 1
@@ -202,6 +204,21 @@ class Game{
         });
         this.renderer.setSize(this.width, this.height);
         this.container.append(this.renderer.domElement)
+        $(this.container).css({
+            zIndex: 200
+        })
+
+        this.rocketCounter = $('<div>').appendTo(container)
+        this.rocketCounter.css({
+            position: 'fixed',
+            top: this.height - 60,
+            left: (this.width - 40)/2,
+            width: 40,
+            height: 30,
+            border: '1px solid pink',
+            zIndex: 300,
+            color: 'white'
+        }).html(this.rockets)
 
         this.scene = new THREE.Scene();
 
@@ -321,6 +338,10 @@ class Game{
     }
 
     newMissile(x, y){
+        if(this.rockets == 0){
+            return
+        }
+        this.rockets--
 
         let direction = this.cannonDirection()
         direction.normalize()
@@ -564,9 +585,10 @@ class Game{
     // Draw the current scene. delta in ms
     draw(delta){
         this.renderer.render(this.scene, this.camera)
+        this.rocketCounter.html(this.rockets)
     }
 
     winPrize(obj){
-        console.warn("Win a prize")
+        this.rockets += this.prizeSize
     }
 }

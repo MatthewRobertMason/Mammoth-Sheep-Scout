@@ -5,12 +5,10 @@ Goals
     - sprites
     - disable destroyed cities
 - music playing
-- prizes spawning
-- collecting prizes
 - level selection menu
 - volume controls
-- extra rocks spawn on note miss
-- limit the number of rockets
+- prizes have connection to the song 
+- explosion graphics
 
 Stretch Goals
 =============
