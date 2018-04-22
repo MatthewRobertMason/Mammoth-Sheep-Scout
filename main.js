@@ -822,7 +822,7 @@ class Game{
               url: 'http://jam-stats.douglass.ca:5000/send',
               jsonp: 'callback',
               dataType: 'jsonp',
-              data: {username: username, song: this.audioData.url, defeat: current.defeat, victory: current.vectory},
+              data: {username: username, song: this.audioData.url, defeat: current.defeat, victory: current.victory},
               done: data => console.log("data"),
               fail: error => console.error("error"),
               always: () => console.log("done")
