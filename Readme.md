@@ -1,14 +1,10 @@
 Goals
 =====
 
-- city damage
-    - sprites
-    - disable destroyed cities
 - music playing
 - level selection menu
 - volume controls
 - prizes have connection to the song
-- explosion graphics
 
 Stretch Goals
 =============

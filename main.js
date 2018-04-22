@@ -51,11 +51,12 @@ class ExplosionEffect{
             )})
         }
 
+        let box = new THREE.BoxBufferGeometry(0.005, 0.005, 0.005)
+
         this.particles = new Set()
         while(this.particles.size < radius * 2000){
             let a = Math.PI * 2 * Math.random()
             let r = Math.random() * radius;
-            let box = new THREE.BoxGeometry(0.01, 0.01, 0.01)
             let material = randomChoice(this.materials)
             let mesh = new THREE.Mesh(box, material)
             game.scene.add(mesh)
@@ -77,6 +78,10 @@ class ExplosionEffect{
             mat.color.r += (Math.random() * 2 - 1) * delta
             mat.color.g += (Math.random() * 2 - 1) * delta
             mat.color.b += (Math.random() * 2 - 1) * delta
+
+            mat.color.r = THREE.Math.clamp(mat.color.r, 0.5, 1)
+            mat.color.g = THREE.Math.clamp(mat.color.g, 0.1, 0.5)
+            mat.color.b = THREE.Math.clamp(mat.color.b, 0.0, 0.3)
         }
 
         for(let par of this.particles){
@@ -395,8 +400,10 @@ class Game{
         this.cities.push({
             x: x,
             y: y,
+            active: true,
             sprite: sprite,
-            zone: zone
+            zone: zone,
+            health: 1
         })
     }
 
@@ -536,9 +543,25 @@ class Game{
     }
 
     hitCity(city, damage, spot){
-        this.explodeGraphic(spot.x, spot.y, 0.15)
+        this.explodeGraphic(spot.x, spot.y, 0.015)
+        if(city.health <= 0) return
+        let before = city.health
         city.health -= damage
-        console.warn("Something hit a city")
+
+        console.log(city.health, damage)
+
+        if(before > 0.66 && city.health <= 0.66){
+            city.sprite.material.map = new THREE.TextureLoader().load("Graphics/City_1.png")
+        }
+
+        if(before > 0.33 && city.health <= 0.33){
+            city.sprite.material.map = new THREE.TextureLoader().load("Graphics/City_2.png")
+        }
+
+        if(city.health <= 0){
+            city.active = false
+            city.sprite.material.map = new THREE.TextureLoader().load("Graphics/City_Fallen.png")
+        }
     }
 
     inHitBox(obj){
@@ -640,6 +663,7 @@ class Game{
         let key = event.key;
         let index = Number(key) - 1
         if(index == index && 0 <= index && index < this.cities.length){
+            if(!this.cities[index].active) return;
             // Look for prizes to trigger
             let found = Array.from(this.prizes).filter(prize => (prize.index == index && this.inHitBox(prize)))
             if(found.length == 0){
