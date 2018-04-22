@@ -1,6 +1,6 @@
 var Music = [
     "Audio/Iron Bacon.mp3",
-    "Audio/Pump.mp3"
+    "Audio/Pump.mp3",
     "Audio/Exciting Trailer.mp3",
     "Audio/Meatball Parade.mp3",
     "Audio/Motherlode.mp3",
