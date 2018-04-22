@@ -130,16 +130,16 @@ function PlayMusic(buffer) {
     source.connect(audioVolumeNode);
     audioVolumeNode.connect(audioContext.destination);
 
-    function test(){
-        console.debug('audio at', GetCurrentAudioTimestamp())
-    }
-
-    setInterval(test, 1000)
+    // function test(){
+    //     console.debug('audio at', GetCurrentAudioTimestamp())
+    // }
+    //
+    // setInterval(test, 1000)
 }
 
-function GetCurrentAudioTimestamp(){
-    return audioContext.getOutputTimestamp().contextTime;
-}
+// function GetCurrentAudioTimestamp(){
+//     return audioContext.getOutputTimestamp().contextTime;
+// }
 
 function analyzeMusic(buffer, callback){
     let high = null
