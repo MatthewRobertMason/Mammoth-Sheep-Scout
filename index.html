@@ -194,7 +194,7 @@
         startLoadingLevel($('#songSelect').val())
       }
 
-      function startLevel(audioData){
+      function startLevel(audioData, soundsData){
         let stats = new Stats()
         document.body.appendChild(stats.dom);
         $(stats.dom).css({
@@ -204,7 +204,7 @@
 
         // Launch an instance of the game with the tag above as its connection to the page
         $('#main').css({display: 'block'})
-        let game = new Game($('#main'), audioData)
+        let game = new Game($('#main'), audioData, soundsData)
         var lastTimestamp = 0
         var running = true;
 
@@ -234,11 +234,13 @@
         let spritesReady = false
         let audioReady = false
         let audioData = null
+        let soundsReady = false
+        let soundsData = null
 
         function maybeStart(){
           if(spritesReady && audioReady){
             console.warn("hide loading screen")
-            startLevel(audioData)
+            startLevel(audioData, soundsData)
           }
         }
 
@@ -251,6 +253,12 @@
         // Ask three to load the graphics
         LoadAllSprites(() => {
           spritesReady = true;
+          maybeStart()
+        })
+
+        LoadAllSounds((data) => {
+          soundsData = data
+          soundsReady = true;
           maybeStart()
         })
       }

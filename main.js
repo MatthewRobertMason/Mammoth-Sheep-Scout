@@ -247,7 +247,7 @@ class Missile extends Targeted {
 }
 
 class Game{
-    constructor(container, audioData){
+    constructor(container, audioData, soundsData){
         this.hitZone = 0.08
         this.rockDamage = 0.4
         this.prizeDamage = 0.1
@@ -426,7 +426,7 @@ class Game{
         console.log(hitBox, this.noteSpeed)
         this.noteDelay = hitBox/this.noteSpeed
         console.log(this.noteDelay)
-        PlaySound(this.audioData.buffer)
+        PlayMusic(this.audioData.buffer)
         this.startTime = audioContext.currentTime;
         this.lastFrameSample = Math.floor(this.noteDelay * this.audioData.buffer.sampleRate)
     }
