@@ -133,25 +133,29 @@ function analyzeMusic(buffer, callback){
     let high = null
     let low = null;
     let band = null;
+    let lowshelf = null;
 
     let threshold = 0.7
 
     function doPeaks(){
-        if(!high || !low || ! band) return;
+        if(!high || !low || !band|| !lowshelf) return;
         let lowNodes = getPeaksAtThreshold(low, threshold)
         let highNodes = getPeaksAtThreshold(high, threshold)
         let bandNodes = getPeaksAtThreshold(band, threshold)
+        let lowshelfNodes = getPeaksAtThreshold(lowshelf, threshold)
 
         callback({
             high: highNodes,
             low: lowNodes,
             band: bandNodes,
+            lowshelf: lowshelfNodes,
         })
     }
 
     filterMusicData(buffer, 'highpass', data => {high = data; doPeaks()})
     filterMusicData(buffer, 'lowpass', data => {low = data; doPeaks()})
     filterMusicData(buffer, 'bandpass', data => {band = data; doPeaks()})
+    filterMusicData(buffer, 'lowshelf', data => {lowshelf = data; doPeaks()})
 }
 
 // passtype can be highpass, lowpass, bandpass or others as listed in the API
