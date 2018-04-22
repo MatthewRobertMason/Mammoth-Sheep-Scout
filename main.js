@@ -95,6 +95,38 @@ class Prize extends MovingThing {
         this.index = arg(params, 'index')
         this.trail = null
     }
+
+    caught(game){
+        game.scene.remove(this.sprite)
+
+        let graphic = new THREE.TextureLoader().load("Graphics/AirDropParachute.png")
+        let material = new THREE.SpriteMaterial({map: graphic, color: 0xffffff});
+        let sprite = new THREE.Sprite(material)
+        this.sprite.position.y = sprite.position.y = 0
+        sprite.scale.x = 1/20
+        sprite.scale.y = 1/20
+
+        this.sprite.position.x = 0;
+        this.sprite.position.z = 0
+
+        let group = new THREE.Group()
+        group.add(sprite)
+        group.add(this.sprite)
+
+        group.position.x = this.x;
+        group.position.z = this.z;
+
+        console.log(group)
+
+        this.vy /= 3
+
+        game.scene.add(group)
+        this.sprite = group
+    }
+
+    get done(){
+        return this.y > 0.85
+    }
 }
 
 class Targeted extends MovingThing {
@@ -156,6 +188,7 @@ class Game{
         this.height = this.width/this.aspect;
 
         this.container = container;
+        this.container.focus()
         this.container.css({
             position: 'absolute',
             top: 0,
@@ -231,10 +264,19 @@ class Game{
         this.newPrize(0)
 
         this.missiles = new Set()
+        this.effects = new Set()
 
         // Bind events
         this.container.mousemove(this.onMouseMove.bind(this))
         this.container.mousedown(this.onMouseDown.bind(this))
+        $('body').keydown(this.onKeyDown.bind(this))
+
+        let _counter = 0
+        let drop = () => {
+            setTimeout(drop, 2000)
+            this.newPrize(0) //_counter++ % this.cities.length)
+        }
+        drop()
     }
 
     newCity(x, y){
@@ -405,6 +447,10 @@ class Game{
         console.warn("Something hit a city")
     }
 
+    inHitBox(obj){
+        return 0.78 > obj.y && obj.y > 0.78 - this.hitZone
+    }
+
     // Update the game state. delta in ms
     update(delta){
         //
@@ -454,7 +500,7 @@ class Game{
         // Check for supplies
         for(let obj of this.prizes){
             // Check for supplies in the good zone
-            if(0.78 > obj.y && obj.y > 0.78 - this.hitZone){
+            if(this.inHitBox(obj)){
                 this.cities[obj.index].zone.material.color = new THREE.Color(0xAAFFAA);
             }
 
@@ -463,6 +509,14 @@ class Game{
                 this.hitCity(this.cities[obj.index], this.prizeDamage, obj)
                 obj.stop(this)
                 this.prizes.delete(obj)
+                this.moving.delete(obj)
+            }
+        }
+
+        for(let obj of this.effects){
+            if(obj.done){
+                obj.stop(this)
+                this.effects.delete(obj)
                 this.moving.delete(obj)
             }
         }
@@ -487,8 +541,32 @@ class Game{
         this.newMissile(x, y)
     }
 
+    onKeyDown(event){
+        let key = event.key;
+        let index = Number(key) - 1
+        if(index == index && 0 <= index && index < this.cities.length){
+            // Look for prizes to trigger
+            let found = Array.from(this.prizes).filter(prize => (prize.index == index && this.inHitBox(prize)))
+            if(found.length == 0){
+                this.newRock()
+                return
+            }
+
+            for(let obj of found){
+                this.prizes.delete(obj)
+                obj.caught(this)
+                this.effects.add(obj)
+                this.winPrize(obj)
+            }
+        }
+    }
+
     // Draw the current scene. delta in ms
     draw(delta){
         this.renderer.render(this.scene, this.camera)
+    }
+
+    winPrize(obj){
+        console.warn("Win a prize")
     }
 }
