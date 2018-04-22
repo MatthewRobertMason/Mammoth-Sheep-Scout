@@ -88,6 +88,9 @@ function getPeaksAtThreshold(data, threshold, desiredValue, desiredThreshold) {
             }
             else {
                 threshold = (threshold/2 - changeValue)
+                if (threshold < changeValue){
+                    desiredValueAchieved = true
+                }
             }
         }
     }
