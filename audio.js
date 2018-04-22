@@ -19,12 +19,13 @@ var SongNames = [
 ]
 
 var Sounds = new Map([
-    ["Sounds/Shot.wav", 1.0],
-    ["Sounds/Explosion.wav", 1.0],
-    ["Sounds/CityExplosion.wav", 1.0],
+    ["Sounds/Shot.wav", null],
+    ["Sounds/Explosion.wav", null],
+    ["Sounds/CityExplosion.wav", null],
 ])
 
 var audioContext;
+var bufferLoader;
 var audioVolumeNode;
 var loadedMusic = new Map();
 
@@ -200,13 +201,42 @@ function filterMusicData(buffer, passType, callback)
 }
 
 function LoadAllSounds(callback){
-    bufferLoader = new BufferLoader(
-        audioContext,
-        Sounds.keys,
-        callback
-    );
+    var request = new XMLHttpRequest();
+    
+    for(let name of Sounds.keys()){
+        // Prepare to to a resource request
+        request = new XMLHttpRequest();
+        request.open('GET', name, true);
+        request.responseType = 'arraybuffer'; // force binary data
 
-    bufferLoader.load();
+        console.dir(request)
+        // Decode asynchronously
+        request.onload = function() {
+            console.log("Sound Loaded");
+            audioContext.decodeAudioData(request.response, function(buffer) {
+                console.log("Sound Parsed")
+
+                Sounds.set(name, buffer)
+                AllSoundsLoaded(callback)
+            });
+        }
+        request.send();
+    }
+}
+
+function AllSoundsLoaded(callback)
+{
+    var allSoundsLoaded = true;
+    for(let name of Sounds.keys()){
+        if (Sounds[name] == null){
+            allSoundsLoaded = false;
+        }
+    }
+
+    if (allSoundsLoaded)
+    {
+        callback();
+    }
 }
 
 function PlaySound(sound) {

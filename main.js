@@ -268,6 +268,7 @@ class Game{
         }
 
         this.audioData = audioData
+        this.soundsData = soundsData
 
         console.log(audioData)
 
@@ -504,6 +505,7 @@ class Game{
             speed: this.missileSpeed,
         })
 
+        PlaySound(soundsData["Sounds/Shot.wav"], 1.0)
         this.missiles.add(rocket)
         this.moving.add(rocket)
 
