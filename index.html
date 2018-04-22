@@ -93,6 +93,20 @@
           <input id='menu-volume' type="range" min='0' max='1000' value='500' onchange='VolumeSliderChange(arguments[0])'>
         </div>
 
+        <div>
+          <select id='difficulty' onchange='Cookies.set("difficulty", )'>
+            <option value='0.8'>Easy</option>
+            <option value='1'>Normal</option>
+            <option value='1.2'>Hard</option>
+          </select>
+          <script>
+            if(typeof Cookies.get('difficulty') == 'undefined') {
+              Cookies.set('difficulty', '1')
+            }
+            $('#difficulty').val(Cookies.get('difficulty'));
+          </script>
+        </div>
+
       </div>
       <div class='menu'>
         <h3>Scoreboard (Local only)</h3>
@@ -288,7 +302,7 @@
           audioData = data
           audioReady = true;
           maybeStart();
-        })
+        }, Number(Cookies.get('difficulty')))
 
         // Ask three to load the graphics
         LoadAllSprites(() => {
