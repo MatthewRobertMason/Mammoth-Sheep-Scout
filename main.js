@@ -766,7 +766,7 @@ class Game{
     }
 
     onMouseDown(event){
-        if(event.button != 0) return;
+        if(event.button != 0 || event.target.tagName != 'CANVAS') return;
         if(!this.running) return
 
         let x = event.offsetX / this.width
