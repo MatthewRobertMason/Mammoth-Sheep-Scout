@@ -1,21 +1,21 @@
 var Music = [
-    "Audio/Exciting Trailer.mp3",
-    "Audio/Gregorian Chant.mp3",
     "Audio/Iron Bacon.mp3",
-    "Audio/Meatball Parade.mp3",
-    "Audio/Mega Hyper Ultrastorm.mp3",
-    "Audio/Motherlode.mp3",
     "Audio/Pump.mp3"
+    "Audio/Exciting Trailer.mp3",
+    "Audio/Meatball Parade.mp3",
+    "Audio/Motherlode.mp3",
+    "Audio/Mega Hyper Ultrastorm.mp3",
+    "Audio/Gregorian Chant.mp3",
 ];
 
 var SongNames = [
-    "Exciting Trailer (90 BPM, 1:16)",
-    "Gregorian Chant (? BPM, 3:14)",
     "Iron Bacon (120 BPM, 0:55)",
-    "Meatball Parade (150 BPM, 3:25)",
-    "Mega Hyper Ultrastorm (220 BPM, 3:13)",
-    "Motherlode (90 BPM, 3:57)",
     "Pump (164 BPM, 0:43)",
+    "Exciting Trailer (90 BPM, 1:16)",
+    "Meatball Parade (150 BPM, 3:25)",
+    "Motherlode (90 BPM, 3:57)",
+    "Mega Hyper Ultrastorm (220 BPM, 3:13)",
+    "Gregorian Chant (? BPM, 3:14)",
 ]
 
 var audioContext;
