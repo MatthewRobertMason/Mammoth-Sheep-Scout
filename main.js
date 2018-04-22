@@ -69,6 +69,8 @@ class ExplosionEffect{
             mesh.position.z = y
 
             this.particles.add({
+                vx: Math.sin(a)/100,
+                vy: Math.cos(a)/100,
                 sprite: mesh,
             })
         }
@@ -77,7 +79,7 @@ class ExplosionEffect{
     update(game, delta){
         for(let mat of this.materials){
             mat.color.r += (Math.random() * 2 - 1) * delta
-            mat.color.g += (Math.random() * 2 - 1) * delta
+            mat.color.g += (Math.random() * 2 - 0.9) * delta
             mat.color.b += (Math.random() * 2 - 1) * delta
 
             mat.color.r = THREE.Math.clamp(mat.color.r, 0.5, 1)
@@ -86,15 +88,22 @@ class ExplosionEffect{
         }
 
         for(let par of this.particles){
-            par.sprite.position.x += (Math.random() * 2 - 1) * delta
-            par.sprite.position.y += (Math.random() * 2 - 1) * delta
-            par.sprite.position.z += (Math.random() * 2 - 1) * delta
+            par.sprite.position.x += delta * ((Math.random() * 2 - 1)/10 + par.vx)
+            par.sprite.position.y += delta * ((Math.random() * 2 - 1)/10 + 0)
+            par.sprite.position.z += delta * ((Math.random() * 2 - 1)/10 + par.vz)
+            par.vy += delta/100
+            if(Math.random() < 0.9 * delta){
+                game.scene.remove(par.sprite)
+                this.particles.delete(par)
+            }
         }
     }
 
     get done(){
         return this.particles.size == 0
     }
+
+    stop(){}
 }
 
 class MovingThing{
@@ -149,6 +158,8 @@ class MovingThing{
 
             // Fade the trail sprites
             for(let sprite of this.trail){
+                sprite.position.x += (Math.random() * 2 - 1)/20 * delta
+                sprite.position.z += (Math.random() * 2 - 1)/20 * delta
                 sprite.position.y -= 0.001
                 sprite.material.opacity -= delta / this.trailTime
             }
