@@ -5,6 +5,7 @@ Goals
 - level selection menu
 - volume controls
 - prizes have connection to the song
+- Backgrounds
 
 Stretch Goals
 =============
