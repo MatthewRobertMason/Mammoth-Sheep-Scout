@@ -39,7 +39,7 @@ def cleanName(name):
 @jsonp
 def setValue():
     try:
-        username = request.args['username']
+        username = request.args['username'][:20]
         song = request.args['song']
         score = [request.args.get('victory', None), request.args.get('defeat', None)]
 

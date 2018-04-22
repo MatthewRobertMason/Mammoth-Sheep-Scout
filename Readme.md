@@ -1,15 +1,10 @@
 Goals
 =====
 
-- prizes have connection to the song
 - Backgrounds
 
 Stretch Goals
 =============
-
-Probably Easy
--------------
-- explosion sounds
 
 Maybe Easy
 ----------
