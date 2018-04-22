@@ -134,7 +134,7 @@ function analyzeMusic(buffer, callback){
     let low = null;
     let band = null;
 
-    let threshold = 0.95
+    let threshold = 0.5
 
     function doPeaks(){
         if(!high || !low || ! band) return;
@@ -143,7 +143,7 @@ function analyzeMusic(buffer, callback){
         let bandNodes = getPeaksAtThreshold(band, threshold)
 
         let all = lowNodes.concat(highNodes).concat(bandNodes)
-        all.sort()
+        all.sort((a, b) => a - b)
         callback(all)
     }
 
