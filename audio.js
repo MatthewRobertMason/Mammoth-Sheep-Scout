@@ -2,7 +2,13 @@ var audioContext;
 var loadedMusic = null;
 
 var Music = [
-    "Audio/Gregorian Chant.mp3"
+    "Audio/Exciting Trailer.mp3",
+    "Audio/Gregorian Chant.mp3",
+    "Audio/Iron Bacon.mp3",
+    "Audio/Meatball Parade.mp3",
+    "Audio/Mega Hyper Ultrastorm.mp3",
+    "Audio/Motherlode.mp3",
+    "Audio/Pump.mp3"
 ];
 
 try {
@@ -12,8 +18,13 @@ try {
 catch(e) {
     alert('Web Audio API is not supported in this browser');
 }
-console.log("start");
-GetSound(Music[0]);
+
+GetMusic(Music[3]);
+
+function musicLoaded(){
+  getPeaksAtThreshold(loadedMusic, 0.95);
+  PlaySound(loadedMusic);
+}
 
 function getPeaksAtThreshold(data, threshold) {
     var peaksArray = [];
@@ -29,29 +40,29 @@ function getPeaksAtThreshold(data, threshold) {
     return peaksArray;
 }
 
-function GetSound(url){
-    console.log("GetSound");
+function GetMusic(url){
     var request = new XMLHttpRequest();
     request.open('GET', url, true);
     request.responseType = 'arraybuffer';
 
     // Decode asynchronously
     request.onload = function() {
-        console.log("Before Decode");
         audioContext.decodeAudioData(request.response, function(buffer) {
             loadedMusic = buffer;
             console.log("Music Loaded");
-            PlaySound(loadedMusic);
       });
     }
     request.send();
 }
 
 function PlaySound(buffer) {
-  console.log("PlaySound");
   var source = audioContext.createBufferSource(); // creates a sound source
   source.buffer = buffer;                    // tell the source which sound to play
   source.connect(audioContext.destination);       // connect the source to the context's destination (the speakers)
   source.start(0);                           // play the source now
                                              // note: on older systems, may have to use deprecated noteOn(time);
+}
+
+function GetCurrentAudioTimestamp(){
+    return audioContext.getOutputTimestamp().contextTime;
 }
