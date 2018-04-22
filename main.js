@@ -261,6 +261,9 @@ class Game{
         this.audioData = audioData
         console.log(audioData)
 
+        this.score = 0;
+        this.running = true;
+
         // Initialize the graphics library
         this.aspect = 1
         this.timeUntilRock = randomIn(...this.rockRange);
@@ -586,6 +589,8 @@ class Game{
 
     // Update the game state. delta in ms
     update(delta){
+        if(!this.running) return
+
         // Figure out how far into the song we are
         let timeInSong = audioContext.currentTime - this.startTime
         let samplesInSong = Math.floor((this.noteDelay + timeInSong) * this.audioData.buffer.sampleRate)
@@ -595,12 +600,22 @@ class Game{
             foundNote = true
             this.notes.shift()
         }
-        console.log(this.lastFrameSample, samplesInSong,  foundNote)
-
         this.lastFrameSample = samplesInSong
         if(foundNote) this.newPrize(0)
 
-        //
+        // Check for lose
+        var notLost = false
+        for(let city of this.cities){
+            notLost |= city.active
+        }
+        if(!notLost) this.finished(false)
+
+        // Check for win
+        if(timeInSong > this.audioData.buffer.duration + 2){
+            this.finished(true)
+        }
+
+        // Drop rocks
         this.timeUntilRock -= delta
         if(this.timeUntilRock < 0){
             this.newRock()
@@ -611,6 +626,7 @@ class Game{
         for(let obj of this.moving){
             obj.update(this, delta)
         }
+
 
         // Check for the missiles reaching the destination
         for(let obj of this.missiles){
@@ -670,6 +686,8 @@ class Game{
     }
 
     onMouseMove(event){
+        if(!this.running) return
+
         let x = event.offsetX / this.width
         let y = event.offsetY / this.height
 
@@ -682,6 +700,7 @@ class Game{
 
     onMouseDown(event){
         if(event.button != 0) return;
+        if(!this.running) return
 
         let x = event.offsetX / this.width
         let y = event.offsetY / this.height
@@ -689,6 +708,7 @@ class Game{
     }
 
     onKeyDown(event){
+        if(!this.running) return
         let key = event.key;
         let index = Number(key) - 1
         if(index == index && 0 <= index && index < this.cities.length){
@@ -717,5 +737,20 @@ class Game{
 
     winPrize(obj){
         this.rockets += this.prizeSize
+    }
+
+    finished(victory){
+        if(!this.running) return;
+        this.running = false;
+
+        // Add score to score cookie for this track
+        let current = Cookies.getJSON(this.audioData.url) || {'victory': null, 'defeat': null}
+        if(victory) current.victory = Math.max(current.victory, this.score)
+        else current.defeat = Math.max(current.defeat, this.score)
+        Cookies.set(this.audioData.url, current)
+
+        // Bring up finished splash
+        if(victory) $('#victory').show()
+        else $('#defeat').show()
     }
 }

@@ -85,6 +85,7 @@ function GetMusic(url, callback){
 
             musicData = {
                 buffer: buffer,
+                url: url,
                 nodes: getPeaksAtThreshold(buffer, 0.95)
             }
 

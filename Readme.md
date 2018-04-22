@@ -2,13 +2,10 @@ Goals
 =====
 
 - music playing
-- level selection menu
 - volume controls
 - prizes have connection to the song
 - Backgrounds
 - score
-- detect level complete/lost
-- return to menu after game
 
 Stretch Goals
 =============

@@ -9,17 +9,51 @@
 			  src="https://code.jquery.com/jquery-3.3.1.js"
 			  integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
 			  crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
     <script src='Stats.js'></script>
     <script src='main.js'></script>
     <script src='sprites.js'></script>
     <script src='audio.js'></script>
 
     <style>
-      #menu {
+      .menu {
         border: 1px solid black;
         padding: 5px;
         margin: 5px;
       }
+
+      #victory {
+        display: none;
+      }
+
+      #defeat {
+        display: none;
+      }
+
+      .shadowbox {
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        width: 100%;
+        height: 100%;
+        opacity: 0.5;
+        z-index: 1000;
+        background-color: #444444;
+      }
+
+      .overlay {
+        position: absolute;
+        top: 20%;
+        left: 20%;
+        right: 20%;
+        bottom: 20%;
+        z-index: 1100;
+        background-color: #cccccc;
+        box-shadow: 5px 4px 6px 0px rgba(0,0,0,0.75);
+        -webkit-box-shadow: 5px 4px 6px 0px rgba(0,0,0,0.75);
+        -moz-box-shadow: 5px 4px 6px 0px rgba(0,0,0,0.75);
+      }
+
     </style>
   </head>
   <body>
@@ -27,14 +61,38 @@
     <div id='main'></div>
 
     <div id='menu'>
+      <div class='menu'>
 
-      <h2>Title</h2>
+        <h2>Title</h2>
 
-      <h4>For LDJAM 41: Combine 2 Incompatable Genres</h4>
+        <h4>For LDJAM 41: Combine 2 Incompatable Genres</h4>
 
 
-      Song: <select id='songSelect'></select>
-      <button onClick='submitMenu()'>Start</button>
+        Song: <select id='songSelect'></select>
+        <button onClick='submitMenu()'>Start</button>
+      </div>
+      <div class='menu'>
+        <h3>Scoreboard (Local only)</h3>
+        <table id='scoreboard'>
+          <tr><th>Track</th><th>In Victory</th><th>In Defeat</th></tr>
+        </table>
+      </div>
+    </div>
+
+    <div id='victory'>
+      <div class="shadowbox"></div>
+      <div class="overlay">
+        <h4> You did it!</h4>
+        <button onclick="location.reload()">Done</button>
+      </div>
+    </div>
+
+    <div id='defeat'>
+      <div class="shadowbox"></div>
+      <div class="overlay">
+        <h4> Oh no! </h4>
+        <button onclick="location.reload()">Done</button>
+      </div>
     </div>
 
     <script>
@@ -46,6 +104,18 @@
           let file = Music[ii];
           let name = SongNames[ii];
           $('<option value="' + file + '">' + name + '</option>').appendTo(select);
+        }
+
+        let scoreboard = $('#scoreboard');
+        for(let ii = 0; ii < Music.length; ii++){
+          let name = SongNames[ii];
+          let file = Music[ii];
+          let current = Cookies.getJSON(file)
+          if(!current) continue
+          let row = $('<tr>').appendTo(scoreboard)
+          $('<td>').html(name).appendTo(row)
+          $('<td>').html(current.victory != null ? current.victory : 'NA').appendTo(row)
+          $('<td>').html(current.defeat != null ? current.defeat : 'NA').appendTo(row)
         }
       }
       $(menu)
