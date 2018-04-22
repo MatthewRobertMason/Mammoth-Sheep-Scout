@@ -9,13 +9,13 @@ var Music = [
 ];
 
 var SongNames = [
-    "Exciting Trailer",
-    "Gregorian Chant",
-    "Iron Bacon",
-    "Meatball Parade",
-    "Mega Hyper Ultrastorm",
-    "Motherlode",
-    "Pump",
+    "Exciting Trailer (90 BPM, 1:16)",
+    "Gregorian Chant (? BPM, 3:14)",
+    "Iron Bacon (120 BPM, 0:55)",
+    "Meatball Parade (150 BPM, 3:25)",
+    "Mega Hyper Ultrastorm (220 BPM, 3:13)",
+    "Motherlode (90 BPM, 3:57)",
+    "Pump (164 BPM, 0:43)",
 ]
 
 var audioContext;
