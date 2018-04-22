@@ -1,5 +1,7 @@
 'use strict'
 
+var soundVolume = 0.25
+
 function arg(params, name, value){
     if(!params.hasOwnProperty(name)){
         if(typeof value === 'undefined'){
@@ -505,7 +507,7 @@ class Game{
             speed: this.missileSpeed,
         })
 
-        PlaySound(this.soundsData.get("Sounds/Shot.wav"), 1.0)
+        PlaySound(this.soundsData.get("Sounds/Shot.wav"), soundVolume)
         this.missiles.add(rocket)
         this.moving.add(rocket)
 
@@ -584,6 +586,8 @@ class Game{
 
     explode(x, y){
         this.explodeGraphic(x, y, this.explosionRadius)
+        PlaySound(this.soundsData.get("Sounds/Explosion.wav"), soundVolume)
+
         let p = {x: x, y: y}
         // Get the prizes in the radius
         for(let prize of this.prizes){
@@ -608,6 +612,7 @@ class Game{
     hitCity(city, damage, spot){
         this.explodeGraphic(spot.x, spot.y, 0.015)
 
+
         if(city.health <= 0){
             this.score += this.points.hitDead
             return
@@ -620,16 +625,19 @@ class Game{
 
         if(before > 0.66 && city.health <= 0.66){
             city.sprite.material.map = Sprites.get("Graphics/City_1.png")
+            PlaySound(this.soundsData.get("Sounds/CityExplosion.wav"), soundVolume)
         }
 
         if(before > 0.33 && city.health <= 0.33){
             city.sprite.material.map = Sprites.get("Graphics/City_2.png")
+            PlaySound(this.soundsData.get("Sounds/CityExplosion.wav"), soundVolume)
         }
 
         if(city.health <= 0){
             this.score += this.points.lostCity
             city.active = false
             city.sprite.material.map = Sprites.get("Graphics/City_Fallen.png")
+            PlaySound(this.soundsData.get("Sounds/CityExplosion.wav"), soundVolume)
         }
     }
 
