@@ -43,35 +43,56 @@ catch(e) {
     alert('Web Audio API is not supported in this browser');
 }
 
-//
-// setTimeout(() => {
-//     GetMusic(Music[0], data => {
-//         PlayMusic(data.buffer)
-//     })
-// }, 2000)
-
-
-function musicLoaded(){
-    getPeaksAtThreshold(loadedMusic, 0.95);
-    PlayMusic(loadedMusic);
-}
-
-function getPeaksAtThreshold(data, threshold) {
+function getPeaksAtThreshold(data, threshold, desiredValue, desiredThreshold) {
     let left = data.getChannelData(0)
     let right = data.getChannelData(1)
     var peaksArray = [];
     var length = data.length;
 
-    threshold *= 2 // instead of dividing the two chanels to average them
+    var desiredValueAchieved = false;
+    var changeValue = 0.05;
 
-    for(var i = 0; i < length; i++) {
-        if (left[i] + right[i] > threshold) {
-            peaksArray.push(i);
-            // Skip forward ~ 1/4s to get past this peak.
-            i += 10000;
+    //threshold *= 2 // instead of dividing the two chanels to average them
+
+    console.log("Get Peaks")
+    while (desiredValueAchieved == false)
+    {
+        peaksArray = []
+        threshold *= 2 // instead of dividing the two chanels to average them
+        for(var i = 0; i < length; i++) {
+            if (left[i] + right[i] > threshold) {
+                peaksArray.push(i);
+                // Skip forward ~ 1/4s to get past this peak.
+                i += 10000;
+            }
+        }
+
+        console.log("Number of peaks: " + peaksArray.length)
+
+        if ((peaksArray.length > desiredValue * (1-desiredThreshold)) && (peaksArray.length < desiredValue * (1+desiredThreshold))){
+            desiredValueAchieved = true
+        }
+        else
+        {
+            if (peaksArray.length > desiredValue){
+                let ratio = peaksArray.length/desiredValue;
+                let tempArray = []
+
+                for(let j = 0; j < peaksArray.length; j+=ratio)
+                {
+                    tempArray.push(peaksArray[Math.floor(j)])
+                }
+
+                peaksArray = tempArray
+                desiredValueAchieved = true
+            }
+            else {
+                threshold = (threshold/2 - changeValue)
+            }
         }
     }
 
+    console.log("Number of peaks: " + peaksArray.length)
     return peaksArray;
 }
 
@@ -141,7 +162,7 @@ function GetCurrentAudioTimestamp(){
     return audioContext.getOutputTimestamp().contextTime;
 }
 
-function analyzeMusic(buffer, callback){
+function analyzeMusic(buffer, callback, difficultyMultiplier){
     let high = null
     let low = null;
     let band = null;
@@ -149,12 +170,14 @@ function analyzeMusic(buffer, callback){
 
     let threshold = 0.7
 
+    let desiredPeaks = buffer.duration/4 * difficultyMultiplier
+
     function doPeaks(){
         if(!high || !low || !band|| !lowshelf) return;
-        let lowNodes = getPeaksAtThreshold(low, threshold)
-        let highNodes = getPeaksAtThreshold(high, threshold)
-        let bandNodes = getPeaksAtThreshold(band, threshold)
-        let lowshelfNodes = getPeaksAtThreshold(lowshelf, threshold)
+        let lowNodes = getPeaksAtThreshold(low, threshold, desiredPeaks, 0.05)
+        let highNodes = getPeaksAtThreshold(high, threshold, desiredPeaks, 0.05)
+        let bandNodes = getPeaksAtThreshold(band, threshold, desiredPeaks, 0.05)
+        let lowshelfNodes = getPeaksAtThreshold(lowshelf, threshold, desiredPeaks, 0.05)
 
         callback({
             high: highNodes,
