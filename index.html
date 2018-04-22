@@ -54,7 +54,7 @@
         startLoadingLevel($('#songSelect').val())
       }
 
-      function startLevel(){
+      function startLevel(audioData){
         let stats = new Stats()
         document.body.appendChild(stats.dom);
         $(stats.dom).css({
@@ -63,7 +63,7 @@
         })
 
         // Launch an instance of the game with the tag above as its connection to the page
-        let game = new Game($('#main'))
+        let game = new Game($('#main'), audioData)
         var lastTimestamp = 0
         var running = true;
 

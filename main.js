@@ -170,6 +170,7 @@ class Prize extends MovingThing {
         super(params)
         this.index = arg(params, 'index')
         this.trail = null
+        this.vy = arg(params, 'speed')
     }
 
     caught(game){
@@ -246,7 +247,7 @@ class Missile extends Targeted {
 }
 
 class Game{
-    constructor(container){
+    constructor(container, audioData){
         this.hitZone = 0.08
         this.rockDamage = 0.4
         this.prizeDamage = 0.1
@@ -256,6 +257,9 @@ class Game{
         this.explosionRadius = 0.05
         this.rockets = 40
         this.prizeSize = 5
+        this.noteSpeed = 0.4
+        this.audioData = audioData
+        console.log(audioData)
 
         // Initialize the graphics library
         this.aspect = 1
@@ -352,8 +356,6 @@ class Game{
 
         this.rocks = new Set()
         this.prizes = new Set()
-        this.newPrize(0)
-
         this.missiles = new Set()
         this.effects = new Set()
 
@@ -362,12 +364,21 @@ class Game{
         this.container.mousedown(this.onMouseDown.bind(this))
         $('body').keydown(this.onKeyDown.bind(this))
 
-        let _counter = 0
-        let drop = () => {
-            setTimeout(drop, 2000)
-            this.newPrize(0) //_counter++ % this.cities.length)
-        }
-        drop()
+        // Figure out the delay
+        // Get the center of the hitbox
+        var hitBox = this.getHitBox()
+        hitBox = (hitBox[0] + hitBox[1])/2
+
+        // Make sure we copy the notes so the cache isn't changed
+        this.notes = JSON.parse(JSON.stringify(this.audioData.nodes))
+
+        // Given the velocity, and distance, we know the delay
+        console.log(hitBox, this.noteSpeed)
+        this.noteDelay = hitBox/this.noteSpeed
+        console.log(this.noteDelay)
+        PlaySound(this.audioData.buffer)
+        this.startTime = audioContext.currentTime;
+        this.lastFrameSample = Math.floor(this.noteDelay * this.audioData.buffer.sampleRate)
     }
 
     newCity(x, y){
@@ -506,6 +517,7 @@ class Game{
             y: y,
             sprite: sprite,
             index: index,
+            speed: this.noteSpeed
         })
 
         this.moving.add(prize)
@@ -562,13 +574,32 @@ class Game{
         }
     }
 
-    inHitBox(obj){
+    getHitBox(){
         let off = ((26/32)/(20*2))
-        return 0.78 > obj.y + off && obj.y + off > 0.78 - this.hitZone
+        return [0.78 - off, 0.78 - this.hitZone - off]
+    }
+
+    inHitBox(obj){
+        let [high, low] = this.getHitBox()
+        return high > obj.y && obj.y > low
     }
 
     // Update the game state. delta in ms
     update(delta){
+        // Figure out how far into the song we are
+        let timeInSong = audioContext.currentTime - this.startTime
+        let samplesInSong = Math.floor((this.noteDelay + timeInSong) * this.audioData.buffer.sampleRate)
+        let foundNote = false
+        while(this.notes[0] < this.lastFrameSample) this.notes.shift()
+        while(this.notes[0] < samplesInSong){
+            foundNote = true
+            this.notes.shift()
+        }
+        console.log(this.lastFrameSample, samplesInSong,  foundNote)
+
+        this.lastFrameSample = samplesInSong
+        if(foundNote) this.newPrize(0)
+
         //
         this.timeUntilRock -= delta
         if(this.timeUntilRock < 0){
