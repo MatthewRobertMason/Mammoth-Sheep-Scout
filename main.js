@@ -1,5 +1,5 @@
 'use strict'
-
+/*
 var audioContext;
 window.addEventListner('load', init, false);
 
@@ -12,6 +12,7 @@ function init() {
         alert('Web Audio API is not supported in this browser');
     }
 }
+*/
 
 function arg(params, name, value){
     if(!params.hasOwnProperty(name)){
@@ -689,18 +690,18 @@ class Game{
     winPrize(obj){
         this.rockets += this.prizeSize
     }
+}
 
-    function getPeaksAtThreshold(data, threshold) {
-        var peaksArray = [];
-        var length = data.length;
-        for(var i = 0; i < length;) {
-            if (data[i] > threshold) {
-                peaksArray.push(i);
-                // Skip forward ~ 1/4s to get past this peak.
-                i += 10000;
-            }
-            i++;
+function getPeaksAtThreshold(data, threshold) {
+    var peaksArray = [];
+    var length = data.length;
+    for(var i = 0; i < length;) {
+        if (data[i] > threshold) {
+            peaksArray.push(i);
+            // Skip forward ~ 1/4s to get past this peak.
+            i += 10000;
         }
-        return peaksArray;
+        i++;
     }
+    return peaksArray;
 }
