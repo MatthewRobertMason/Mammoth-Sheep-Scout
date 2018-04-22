@@ -105,7 +105,7 @@ function VolumeSliderChange(event){
 
 function SetVolume(value){
     audioVolumeNode.gain.setValueAtTime(value, audioContext.currentTime)
-    Cookies.set('volume', value)
+    Cookies.set('volume', value, {expires: 30})
 }
 
 function GetVolume(){

@@ -818,7 +818,7 @@ class Game{
         let current = Cookies.getJSON(this.audioData.url) || {victory: '-Infinity', defeat: '-Infinity'}
         if(victory) current.victory = String(Math.max(Number(current.victory), this.score))
         else current.defeat = String(Math.max(Number(current.defeat), this.score))
-        Cookies.set(this.audioData.url, current)
+        Cookies.set(this.audioData.url, current, {expires: 30})
 
         // Bring up finished splash
         if(victory) $('#victory').show()

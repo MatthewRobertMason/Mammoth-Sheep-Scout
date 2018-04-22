@@ -108,8 +108,8 @@
 
             function SetDifficulty(event){
               let target = $(event.target);
-              Cookies.set('difficulty', target.val())
-              Cookies.set('difficulty-name', target[0].selectedOptions[0].text)
+              Cookies.set('difficulty', target.val(), {expires: 30})
+              Cookies.set('difficulty-name', target[0].selectedOptions[0].text, {expires: 30})
             }
 
           </script>
@@ -196,7 +196,7 @@
 
       function SetName(){
         let value = $('#username').val()
-        Cookies.set('username', value)
+        Cookies.set('username', value, {expires: 30})
         console.log('username set to', value)
       }
 
