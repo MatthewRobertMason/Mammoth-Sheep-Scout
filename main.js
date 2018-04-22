@@ -88,7 +88,7 @@ class MovingThing{
 class Prize extends MovingThing {
     constructor(params){
         super(params)
-
+        this.index = arg(params, 'index')
         this.trail = null
     }
 }
@@ -208,8 +208,8 @@ class Game{
         this.mouse = new THREE.Vector2(0.5, 0.5)
 
         // Add the game objects
+        this.cities = []
         this.moving = new Set()
-        this.cities = new Set()
         this.newCity(0.1, 0.9)
         this.newCity(0.3, 0.9)
         this.newCity(0.7, 0.9)
@@ -219,7 +219,7 @@ class Game{
         this.newRock()
 
         this.prizes = new Set()
-        this.newPrize(0.1)
+        this.newPrize(0)
 
         this.missiles = new Set()
 
@@ -230,15 +230,15 @@ class Game{
 
     newCity(x, y){
 
-        let zone_graphic = new THREE.TextureLoader().load("Graphics/White.png")
-        let zone_material = new THREE.SpriteMaterial({map: zone_graphic, color: 0x222222});
+        let zone_graphic = new THREE.TextureLoader().load("Graphics/Frame.png")
+        let zone_material = new THREE.SpriteMaterial({map: zone_graphic, color: 0xFFAAAA});
         let zone = new THREE.Sprite(zone_material)
         this.scene.add(zone)
         zone.center.y = 0
         zone.position.x = x
         zone.position.y = -0.9
         zone.position.z = y - 0.12
-        zone.scale.x = 1/14
+        zone.scale.x = 1/20
         zone.scale.y = this.hitZone
 
 
@@ -253,7 +253,7 @@ class Game{
         sprite.scale.x = 1/10
         sprite.scale.y = 1/10
 
-        this.cities.add({
+        this.cities.push({
             x: x,
             y: y,
             sprite: sprite,
@@ -338,7 +338,8 @@ class Game{
         this.moving.add(rock)
     }
 
-    newPrize(x){
+    newPrize(index){
+        let x = this.cities[index].x
         let y = 0
         let graphic = new THREE.TextureLoader().load("Graphics/AirDropCrate.png")
         let material = new THREE.SpriteMaterial({map: graphic, color: 0xffffff});
@@ -353,7 +354,8 @@ class Game{
         let prize = new Prize({
             x: x,
             y: y,
-            sprite: sprite
+            sprite: sprite,
+            index: index,
         })
 
         this.moving.add(prize)
@@ -388,7 +390,7 @@ class Game{
         // Check for metiors hitting
         for(let obj of this.rocks){
             // Check if hit city with good javascript programming(TM)
-            let [offset, city] = Array.from(this.cities).map(city => [distance(city, obj), city]).reduce((a, b) => (a[0] < b[0] ? a : b))
+            let [offset, city] = this.cities.map(city => [distance(city, obj), city]).reduce((a, b) => (a[0] < b[0] ? a : b))
 
             if(offset < 0.05){
                 obj.stop(this);
@@ -405,14 +407,18 @@ class Game{
             }
         }
 
+        for(let city of this.cities) city.zone.material.color = new THREE.Color(0xFFAAAA);
+
         // Check for supplies
         for(let obj of this.prizes){
             // Check for supplies in the good zone
-            // TODO EXTRA highlight when the key should be pressed
+            if(0.78 > obj.y && obj.y > 0.78 - this.hitZone){
+                this.cities[obj.index].zone.material.color = new THREE.Color(0xAAFFAA);
+            }
 
             // check for the bad zone
             if(obj.y > 0.8){
-                this.hitCity(Array.from(this.cities).find(city => city.x == obj.x))
+                this.hitCity(this.cities[obj.index])
                 obj.stop(this)
                 this.prizes.delete(obj)
                 this.moving.delete(obj)
