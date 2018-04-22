@@ -86,15 +86,17 @@
         <h2>Rhythm Defence</h2>
         <h4>For LDJAM 41: Combine 2 Incompatable Genres</h4>
 
+        <div>
         Song: <select id='songSelect'></select>
         <button onClick='submitMenu()'>Start</button>
+      </div>
 
         <div>
-          <input id='menu-volume' type="range" min='0' max='1000' value='500' onchange='VolumeSliderChange(arguments[0])'>
+          Volume: <input id='menu-volume' type="range" min='0' max='1000' value='500' onchange='VolumeSliderChange(arguments[0])'>
         </div>
 
         <div>
-          <select id='difficulty' onchange='SetDifficulty(arguments[0])'>
+          Difficulty: <select id='difficulty' onchange='SetDifficulty(arguments[0])'>
             <option value='0.5'>Relaxed</option>
             <option value='0.8'>Easy</option>
             <option selected value='1'>Normal</option>

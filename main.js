@@ -280,7 +280,7 @@ class Game{
         // Initialize the graphics library
         this.aspect = 1
         this.timeUntilRock = randomIn(...this.rockRange);
-        this.width = 800;
+        this.width = 64*10 * 1.5;
         this.height = this.width/this.aspect;
 
         this.container = container;
@@ -360,11 +360,11 @@ class Game{
         this.scene.add(ambientLight);
 
         // Add grid while developing
-        var gridHelper = new THREE.GridHelper(2, 20);
-        gridHelper.position.x = 0.5
-        gridHelper.position.z = 0.5
-        gridHelper.position.y = -1
-        this.scene.add(gridHelper);
+        // var gridHelper = new THREE.GridHelper(2, 20);
+        // gridHelper.position.x = 0.5
+        // gridHelper.position.z = 0.5
+        // gridHelper.position.y = -1
+        // this.scene.add(gridHelper);
 
         // Add the cannon
         {
