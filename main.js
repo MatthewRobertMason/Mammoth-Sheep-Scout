@@ -815,5 +815,18 @@ class Game{
         // Bring up finished splash
         if(victory) $('#victory').show()
         else $('#defeat').show()
+
+        let username = Cookies.get('username')
+        if(username && username != ''){
+            $.ajax({
+              url: 'http://jam-stats.douglass.ca:5000/send',
+              jsonp: 'callback',
+              dataType: 'jsonp',
+              data: {username: username, song: this.audioData.url, defeat: current.defeat, victory: current.vectory},
+              done: data => console.log("data"),
+              fail: error => console.error("error"),
+              always: () => console.log("done")
+            })
+        }
     }
 }

@@ -103,6 +103,13 @@
       </div>
 
       <div class='menu'>
+        <b> Disclaimer: </b> This leader board operates on the honour system.
+        <div>Enter a name to use for the jam's scoreboard <input id='username' type='text'><button onclick='SetName()'>Save</button></div>
+        <h3>Scoreboard (Jam)</h3>
+        <div id='scoreTables'></div>
+      </div>
+
+      <div class='menu'>
         <div class='credit-row'>
           <div class='credit'>"Motherlode" Kevin MacLeod (incompetech.com)</div>
           <div class='licence'>Licensed under <a href='http://creativecommons.org/licenses/by/3.0/'>Creative Commons: By Attribution 3.0 License</a></div>
@@ -166,6 +173,12 @@
 
     <script>
 
+      function SetName(){
+        let value = $('#username').val()
+        Cookies.set('username', value)
+        console.log('username set to', value)
+      }
+
       function menu(){
         $('#menu-volume').val(GetVolume()*1000)
         $('#menu').css({display: 'block'})
@@ -187,6 +200,34 @@
           $('<td>').html(current.victory != null ? current.victory : 'NA').appendTo(row)
           $('<td>').html(current.defeat != null ? current.defeat : 'NA').appendTo(row)
         }
+
+        function loadLeaderboard(data){
+          console.log(data)
+          let board = $('#scoreTables');
+          for(let ii = 0; ii < Music.length; ii++){
+            let file = Music[ii];
+            let name = SongNames[ii];
+            if(!data.hasOwnProperty(file)) continue;
+            $('<h4>').html(name).appendTo(board)
+            let table = $('<table>').appendTo(board)
+            table.append($("<tr><th>Player</th><th>In Victory</th><th>In Defeat</th></tr>"))
+            for(let player of Object.keys(data[file])){
+              let row = $('<tr>').appendTo(table)
+              $('<td>').html(player).appendTo(row)
+              $('<td>').html(data[file][player][0]).appendTo(row)
+              $('<td>').html(data[file][player][1]).appendTo(row)
+            }
+          }
+        }
+
+        //
+        if(Cookies.get('username')) $('#username').val(Cookies.get('username'))
+        $.ajax({
+          url: 'http://jam-stats.douglass.ca:5000/board',
+          jsonp: 'callback',
+          dataType: 'jsonp',
+          success: loadLeaderboard,
+        })
       }
       $(menu)
 
