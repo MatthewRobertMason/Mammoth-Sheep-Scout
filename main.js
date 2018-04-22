@@ -1,5 +1,18 @@
 'use strict'
 
+var audioContext;
+window.addEventListner('load', init, false);
+
+function init() {
+    try {
+        window.AudioContext = window.AudioContext||window.webkitAudioContext;
+        audioContext = new AudioContext();
+    }
+    catch(e) {
+        alert('Web Audio API is not supported in this browser');
+    }
+}
+
 function arg(params, name, value){
     if(!params.hasOwnProperty(name)){
         if(typeof value === 'undefined'){
@@ -42,7 +55,7 @@ class ExplosionEffect{
         while(this.particles.size < radius * 2000){
             let a = Math.PI * 2 * Math.random()
             let r = Math.random() * radius;
-            let box = new THREE.BoxBufferGeometry(0.005, 0.005, 0.005)
+            let box = new THREE.BoxGeometry(0.01, 0.01, 0.01)
             let material = randomChoice(this.materials)
             let mesh = new THREE.Mesh(box, material)
             game.scene.add(mesh)
@@ -54,8 +67,6 @@ class ExplosionEffect{
             mesh.position.z = y
 
             this.particles.add({
-                vx: Math.sin(a)/100,
-                vy: Math.cos(a)/100,
                 sprite: mesh,
             })
         }
@@ -64,27 +75,20 @@ class ExplosionEffect{
     update(game, delta){
         for(let mat of this.materials){
             mat.color.r += (Math.random() * 2 - 1) * delta
-            mat.color.g += (Math.random() * 2 - 0.9) * delta
+            mat.color.g += (Math.random() * 2 - 1) * delta
             mat.color.b += (Math.random() * 2 - 1) * delta
         }
 
         for(let par of this.particles){
-            par.sprite.position.x += delta * (0.1 * (Math.random() * 2 - 1) + par.vx)
-            par.sprite.position.y += delta * (0.1 * (Math.random() * 2 - 1) + 0)
-            par.sprite.position.z += delta * (0.1 * (Math.random() * 2 - 1) + par.vy)
-            par.vy += delta/100
-            if(Math.random() < 0.9 * delta){
-                game.scene.remove(par.sprite)
-                this.particles.delete(par)
-            }
+            par.sprite.position.x += (Math.random() * 2 - 1) * delta
+            par.sprite.position.y += (Math.random() * 2 - 1) * delta
+            par.sprite.position.z += (Math.random() * 2 - 1) * delta
         }
     }
 
     get done(){
         return this.particles.size == 0
     }
-
-    stop(){}
 }
 
 class MovingThing{
@@ -139,8 +143,6 @@ class MovingThing{
 
             // Fade the trail sprites
             for(let sprite of this.trail){
-                sprite.position.x += (Math.random() * 2 - 1)/20 * delta
-                sprite.position.z += (Math.random() * 2 - 1)/20 * delta
                 sprite.position.y -= 0.001
                 sprite.material.opacity -= delta / this.trailTime
             }
@@ -227,7 +229,6 @@ class Rock extends Targeted {
     constructor(params){
         params.rotation = Math.PI/2
         super(params)
-        this.trailFrameSkip = 0
         this.trailTime = 0.5
     }
 }
@@ -535,7 +536,7 @@ class Game{
     }
 
     hitCity(city, damage, spot){
-        this.explodeGraphic(spot.x, spot.y, 0.015)
+        this.explodeGraphic(spot.x, spot.y, 0.15)
         city.health -= damage
         console.warn("Something hit a city")
     }
@@ -663,5 +664,19 @@ class Game{
 
     winPrize(obj){
         this.rockets += this.prizeSize
+    }
+
+    function getPeaksAtThreshold(data, threshold) {
+        var peaksArray = [];
+        var length = data.length;
+        for(var i = 0; i < length;) {
+            if (data[i] > threshold) {
+                peaksArray.push(i);
+                // Skip forward ~ 1/4s to get past this peak.
+                i += 10000;
+            }
+            i++;
+        }
+        return peaksArray;
     }
 }
