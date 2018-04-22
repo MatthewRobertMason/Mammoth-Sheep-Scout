@@ -17,3 +17,4 @@ Stretch Goals
 - Gregorian chant if you game over too many times
 - separate difficulty modes
 - Grab music from Spotify
+- Tutorial level with simple drum beat
