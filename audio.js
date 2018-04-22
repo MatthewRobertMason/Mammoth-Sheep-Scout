@@ -1,5 +1,6 @@
 var audioContext;
 var loadedMusic = null;
+var rhythmData = null;
 
 var Music = [
     "Audio/Exciting Trailer.mp3",
@@ -26,7 +27,7 @@ catch(e) {
 // GetMusic(Music[3]);
 
 function musicLoaded(){
-  getPeaksAtThreshold(loadedMusic, 0.95);
+  rhythmData = getPeaksAtThreshold(loadedMusic, 0.95);
   PlaySound(loadedMusic);
 }
 
