@@ -1,6 +1,6 @@
 var Music = [
     "Audio/Iron Bacon.mp3",
-    "Audio/Pump.mp3"
+    "Audio/Pump.mp3",
     "Audio/Exciting Trailer.mp3",
     "Audio/Meatball Parade.mp3",
     "Audio/Motherlode.mp3",
@@ -48,29 +48,18 @@ function musicLoaded(){
 }
 
 function getPeaksAtThreshold(data, threshold) {
-    // TODO Most of the music is probably sterio, but we'll assume mono temporarily
-    console.log(data)
-    let channels = []
-    for(let ii = 0; ii < data.numberOfChannels; ii++)
-        channels.push(data.getChannelData(ii))
-
+    let channel = data.getChannelData(0)
     var peaksArray = [];
     var length = data.length;
 
-    var max = 0
-
     for(var i = 0; i < length; i++) {
-
-        max = Math.max(max, channels[0][i])
-
-        if (channels[0][i] > threshold) {
+        if (channel[i] > threshold) {
             peaksArray.push(i);
             // Skip forward ~ 1/4s to get past this peak.
             i += 10000;
         }
     }
 
-    console.warn(max)
     return peaksArray;
 }
 
@@ -100,17 +89,21 @@ function GetMusic(url, callback){
 
     // Decode asynchronously
     request.onload = function() {
+        console.log("Music Loaded");
         audioContext.decodeAudioData(request.response, function(buffer) {
-            console.log("Music Loaded");
+            console.log("Music Parsed")
+            analyzeMusic(buffer, (data) => {
+                console.log("Music Analyzed")
 
-            musicData = {
-                buffer: buffer,
-                url: url,
-                nodes: getPeaksAtThreshold(buffer, 0.95)
-            }
+                musicData = {
+                    buffer: buffer,
+                    url: url,
+                    nodes: data
+                }
 
-            loadedMusic.set(url, musicData)
-            if(callback) callback(musicData)
+                loadedMusic.set(url, musicData)
+                callback(musicData)
+            })
       });
     }
     request.send();
@@ -134,6 +127,29 @@ function PlaySound(buffer) {
 
 function GetCurrentAudioTimestamp(){
     return audioContext.getOutputTimestamp().contextTime;
+}
+
+function analyzeMusic(buffer, callback){
+    let high = null
+    let low = null;
+    let band = null;
+
+    let threshold = 0.95
+
+    function doPeaks(){
+        if(!high || !low || ! band) return;
+        let lowNodes = getPeaksAtThreshold(low, threshold)
+        let highNodes = getPeaksAtThreshold(high, threshold)
+        let bandNodes = getPeaksAtThreshold(band, threshold)
+
+        let all = lowNodes.concat(highNodes).concat(bandNodes)
+        all.sort()
+        callback(all)
+    }
+
+    filterMusicData(buffer, 'highpass', data => {high = data; doPeaks()})
+    filterMusicData(buffer, 'lowpass', data => {low = data; doPeaks()})
+    filterMusicData(buffer, 'bandpass', data => {band = data; doPeaks()})
 }
 
 // passtype can be highpass, lowpass, bandpass or others as listed in the API
