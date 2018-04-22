@@ -94,16 +94,24 @@
         </div>
 
         <div>
-          <select id='difficulty' onchange='Cookies.set("difficulty", )'>
+          <select id='difficulty' onchange='SetDifficulty(arguments[0])'>
+            <option value='0.5'>Relaxed</option>
             <option value='0.8'>Easy</option>
-            <option value='1'>Normal</option>
-            <option value='1.2'>Hard</option>
+            <option selected value='1'>Normal</option>
+            <option value='1.5'>Hard</option>
+            <option value='2'>Very Hard</option>
+            <option value='3'>Nonsense</option>
           </select>
           <script>
-            if(typeof Cookies.get('difficulty') == 'undefined') {
-              Cookies.set('difficulty', '1')
-            }
+            if(typeof Cookies.get('difficulty') == 'undefined') SetDifficulty({target: document.getElementById('difficulty')})
             $('#difficulty').val(Cookies.get('difficulty'));
+
+            function SetDifficulty(event){
+              let target = $(event.target);
+              Cookies.set('difficulty', target.val())
+              Cookies.set('difficulty-name', target[0].selectedOptions[0].text)
+            }
+
           </script>
         </div>
 
