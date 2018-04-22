@@ -116,8 +116,6 @@ class Prize extends MovingThing {
         group.position.x = this.x;
         group.position.z = this.z;
 
-        console.log(group)
-
         this.vy /= 3
 
         game.scene.add(group)
@@ -469,7 +467,8 @@ class Game{
     }
 
     inHitBox(obj){
-        return 0.78 > obj.y && obj.y > 0.78 - this.hitZone
+        let off = ((26/32)/(20*2))
+        return 0.78 > obj.y + off && obj.y + off > 0.78 - this.hitZone
     }
 
     // Update the game state. delta in ms
