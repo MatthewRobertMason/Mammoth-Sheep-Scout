@@ -90,7 +90,7 @@ class ExplosionEffect{
         for(let par of this.particles){
             par.sprite.position.x += delta * ((Math.random() * 2 - 1)/10 + par.vx)
             par.sprite.position.y += delta * ((Math.random() * 2 - 1)/10 + 0)
-            par.sprite.position.z += delta * ((Math.random() * 2 - 1)/10 + par.vz)
+            par.sprite.position.z += delta * ((Math.random() * 2 - 1)/10 + par.vy)
             par.vy += delta/100
             if(Math.random() < 0.9 * delta){
                 game.scene.remove(par.sprite)
