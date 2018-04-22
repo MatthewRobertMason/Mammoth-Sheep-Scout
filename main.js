@@ -14,6 +14,10 @@ function distance(a, b){
     return Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2))
 }
 
+function randomIn(a, b){
+    return Math.random() * (b - a) + a
+}
+
 class MovingThing{
     constructor(params){
         this._x = arg(params, 'x')
@@ -106,7 +110,7 @@ class Targeted extends MovingThing {
         velocity.sub(start)
         this.goalDistance = velocity.length()
         velocity.normalize()
-        velocity.multiplyScalar(0.2)
+        velocity.multiplyScalar(arg(params, 'speed', 0.2))
 
         this.sprite.material.rotation = -(new THREE.Vector2(velocity.x, velocity.z).angle()) + arg(params, 'rotation', 0)
         this.vx = velocity.x;
@@ -138,9 +142,16 @@ class Missile extends Targeted {
 class Game{
     constructor(container){
         this.hitZone = 0.08
+        this.rockDamage = 0.4
+        this.prizeDamage = 0.1
+        this.rockRange = [0.3, 4]
+        this.rockSpeed = 0.1
+        this.missileSpeed = 0.4
+        this.explosionRadius = 0.05
 
         // Initialize the graphics library
         this.aspect = 1
+        this.timeUntilRock = randomIn(...this.rockRange);
         this.width = 800;
         this.height = this.width/this.aspect;
 
@@ -216,8 +227,6 @@ class Game{
         this.newCity(0.9, 0.9)
 
         this.rocks = new Set()
-        this.newRock()
-
         this.prizes = new Set()
         this.newPrize(0)
 
@@ -292,6 +301,7 @@ class Game{
             start: start,
             end: end,
             sprite: sprite,
+            speed: this.missileSpeed,
         })
 
         this.missiles.add(rocket)
@@ -303,7 +313,7 @@ class Game{
 
         let depth = 0.11
 
-        if(Math.random() < 0){
+        if(Math.random() < 0.5){
             var start = new THREE.Vector3(
                 Math.random() < 0.5 ? 0 : 1,
                 depth,
@@ -332,6 +342,7 @@ class Game{
             start: start,
             end: end,
             sprite: sprite,
+            speed: this.rockSpeed,
         })
 
         this.rocks.add(rock)
@@ -362,16 +373,47 @@ class Game{
         this.prizes.add(prize)
     }
 
-    explode(x, y){
-        console.warn("Make an explosion")
+    explodeGraphic(x, y, radius){
+        console.warn("Make an explode graphic")
     }
 
-    hitCity(city){
+    explode(x, y){
+        this.explodeGraphic(x, y, this.explosionRadius)
+        let p = {x: x, y: y}
+        // Get the prizes in the radius
+        for(let prize of this.prizes){
+            if(distance(p, prize) < this.explosionRadius){
+                prize.stop(this)
+                this.moving.delete(prize)
+                this.prizes.delete(prize)
+            }
+        }
+
+        // Get the rocks in the radius
+        for(let rock of this.rocks){
+            if(distance(p, rock) < this.explosionRadius){
+                rock.stop(this)
+                this.moving.delete(rock)
+                this.rocks.delete(rock)
+            }
+        }
+    }
+
+    hitCity(city, damage, spot){
+        this.explodeGraphic(spot.x, spot.y, 0.15)
+        city.health -= damage
         console.warn("Something hit a city")
     }
 
     // Update the game state. delta in ms
     update(delta){
+        //
+        this.timeUntilRock -= delta
+        if(this.timeUntilRock < 0){
+            this.newRock()
+            this.timeUntilRock = randomIn(...this.rockRange)
+        }
+
         // Move everything forward
         for(let obj of this.moving){
             obj.update(this, delta)
@@ -394,7 +436,7 @@ class Game{
 
             if(offset < 0.05){
                 obj.stop(this);
-                this.hitCity(city);
+                this.hitCity(city, this.rockDamage, obj);
                 this.moving.delete(obj)
                 this.rocks.delete(obj);
             }
@@ -418,7 +460,7 @@ class Game{
 
             // check for the bad zone
             if(obj.y > 0.8){
-                this.hitCity(this.cities[obj.index])
+                this.hitCity(this.cities[obj.index], this.prizeDamage, obj)
                 obj.stop(this)
                 this.prizes.delete(obj)
                 this.moving.delete(obj)

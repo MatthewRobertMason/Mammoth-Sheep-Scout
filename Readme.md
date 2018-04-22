@@ -1,14 +1,18 @@
 Goals
 =====
 
-- stopping rocks
 - getting hurt by box
-- destroying prizes
 - city damage
+    - sprites
+    - disable destroyed cities
 - music playing
 - prizes spawning
 - collecting prizes
 - parachute animation
+- level selection menu
+- volume controls
+- extra rocks spawn on note miss
+- limit the number of rockets
 
 Stretch Goals
 =============
