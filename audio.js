@@ -111,7 +111,7 @@ function GetVolume(){
     return val;
 }
 
-function GetMusic(url, callback){
+function GetMusic(url, callback, difficultyMultiplier){
     // Load the song from cache if we already loaded it
     if(loadedMusic.has(url)) return loadedMusic.get(url)
 
@@ -136,7 +136,7 @@ function GetMusic(url, callback){
 
                 loadedMusic.set(url, musicData)
                 callback(musicData)
-            })
+            }, difficultyMultiplier)
       });
     }
     request.send();
