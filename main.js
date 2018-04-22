@@ -414,7 +414,12 @@ class Game{
         hitBox = (hitBox[0] + hitBox[1])/2
 
         // Make sure we copy the notes so the cache isn't changed
-        this.notes = JSON.parse(JSON.stringify(this.audioData.nodes))
+        this.notes = [
+            JSON.parse(JSON.stringify(this.audioData.nodes.low)),
+            JSON.parse(JSON.stringify(this.audioData.nodes.band)),
+            JSON.parse(JSON.stringify(this.audioData.nodes.high)),
+            []
+        ]
 
         // Given the velocity, and distance, we know the delay
         console.log(hitBox, this.noteSpeed)
@@ -642,14 +647,17 @@ class Game{
         // Figure out how far into the song we are
         let timeInSong = audioContext.currentTime - this.startTime
         let samplesInSong = Math.floor((this.noteDelay + timeInSong) * this.audioData.buffer.sampleRate)
-        let foundNote = false
-        while(this.notes[0] < this.lastFrameSample) this.notes.shift()
-        while(this.notes[0] < samplesInSong){
-            foundNote = true
-            this.notes.shift()
+        for(let index = 0; index < 4; index++){
+            let foundNote = false
+            let notes = this.notes[index]
+            while(notes[0] < this.lastFrameSample) notes.shift()
+            while(notes[0] < samplesInSong){
+                foundNote = true
+                notes.shift()
+            }
+            if(foundNote) this.newPrize(index)
         }
         this.lastFrameSample = samplesInSong
-        if(foundNote) this.newPrize(0)
 
         // Check for lose
         var notLost = false

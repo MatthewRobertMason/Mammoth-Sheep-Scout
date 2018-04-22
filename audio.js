@@ -134,7 +134,7 @@ function analyzeMusic(buffer, callback){
     let low = null;
     let band = null;
 
-    let threshold = 0.5
+    let threshold = 0.7
 
     function doPeaks(){
         if(!high || !low || ! band) return;
@@ -142,9 +142,11 @@ function analyzeMusic(buffer, callback){
         let highNodes = getPeaksAtThreshold(high, threshold)
         let bandNodes = getPeaksAtThreshold(band, threshold)
 
-        let all = lowNodes.concat(highNodes).concat(bandNodes)
-        all.sort((a, b) => a - b)
-        callback(all)
+        callback({
+            high: highNodes,
+            low: lowNodes,
+            band: bandNodes,
+        })
     }
 
     filterMusicData(buffer, 'highpass', data => {high = data; doPeaks()})
