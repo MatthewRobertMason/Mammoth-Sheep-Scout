@@ -19,11 +19,17 @@ var SongNames = [
 ]
 
 var audioContext;
+var audioVolumeNode;
 var loadedMusic = new Map();
 
 try {
     window.AudioContext = window.AudioContext||window.webkitAudioContext;
     audioContext = new AudioContext();
+    audioVolumeNode = audioContext.createGain();
+    audioVolumeNode.gain.value = 0.1; // default to 10% VolumeSliderChange
+    audioVolumeNode.connect(audioContext.destination);
+
+
 }
 catch(e) {
     alert('Web Audio API is not supported in this browser');
@@ -111,10 +117,12 @@ function GetMusic(url, callback){
 
 function PlaySound(buffer) {
     var source = audioContext.createBufferSource(); // creates a sound source
-    source.buffer = buffer;                    // tell the source which sound to play
-    source.connect(audioContext.destination);       // connect the source to the context's destination (the speakers)
-    source.start(0);                           // play the source now
-                                             // note: on older systems, may have to use deprecated noteOn(time);
+    source.buffer = buffer;                         // tell the source which sound to play
+    //source.connect(audioContext.destination);       // connect the source to the context's destination (the speakers)
+    source.start(0);                                // play the source now
+                                                    // note: on older systems, may have to use deprecated noteOn(time);
+    source.connect(audioVolumeNode);
+    audioVolumeNode.connect(audioContext.destination);
 
     function test(){
         console.debug('audio at', GetCurrentAudioTimestamp())
