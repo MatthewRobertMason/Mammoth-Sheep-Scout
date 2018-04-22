@@ -60,6 +60,20 @@
         -moz-box-shadow: 5px 4px 6px 0px rgba(0,0,0,0.75);
       }
 
+      .credit {
+        float: left;
+      }
+
+      .licence {
+        float: right;
+      }
+
+      .credit-row{
+        clear: both;
+        /* display: flex;
+        flex-direction: row; */
+      }
+
     </style>
   </head>
   <body>
@@ -87,12 +101,44 @@
           <tr><th>Track</th><th>In Victory</th><th>In Defeat</th></tr>
         </table>
       </div>
+
+      <div class='menu'>
+        <div class='credit-row'>
+          <div class='credit'>"Motherlode" Kevin MacLeod (incompetech.com)</div>
+          <div class='licence'>Licensed under <a href='http://creativecommons.org/licenses/by/3.0/'>Creative Commons: By Attribution 3.0 License</a></div>
+        </div>
+
+        <div class='credit-row'>
+          <div class='credit'>"Iron Bacon" Kevin MacLeod (incompetech.com)</div>
+          <div class='licence'>Licensed under <a href='http://creativecommons.org/licenses/by/3.0/'>Creative Commons: By Attribution 3.0 License</a></div>
+        </div>
+
+        <div class='credit-row'>
+          <div class='credit'>"Pump" Kevin MacLeod (incompetech.com)</div>
+          <div class='licence'>Licensed under <a href='http://creativecommons.org/licenses/by/3.0/'>Creative Commons: By Attribution 3.0 License</a></div>
+        </div>
+
+        <div class='credit-row'>
+          <div class='credit'>"Meatball Parade" Kevin MacLeod (incompetech.com)</div>
+          <div class='licence'>Licensed under <a href='http://creativecommons.org/licenses/by/3.0/'>Creative Commons: By Attribution 3.0 License</a></div>
+        </div>
+
+        <div class='credit-row'>
+          <div class='credit'>"Mega Hyper Ultrastorm" Kevin MacLeod (incompetech.com)</div>
+          <div class='licence'>Licensed under <a href='http://creativecommons.org/licenses/by/3.0/'>Creative Commons: By Attribution 3.0 License</a></div>
+        </div>
+
+        <div style='clear:both'></div>
+      </div>
     </div>
 
     <div id='victory'>
       <div class="shadowbox"></div>
       <div class="overlay">
         <h4> You did it!</h4>
+
+        <p> You saved the day! That was worth <span class='final_score'></span> points!</p>
+
         <button onclick="location.reload()">Done</button>
       </div>
     </div>
@@ -101,6 +147,9 @@
       <div class="shadowbox"></div>
       <div class="overlay">
         <h4> Oh no! </h4>
+
+        <p> The cities got destroyed, but you did get <span class='final_score'></span> points!</p>
+
         <button onclick="location.reload()">Done</button>
       </div>
     </div>

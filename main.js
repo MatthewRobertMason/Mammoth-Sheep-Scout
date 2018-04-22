@@ -258,7 +258,17 @@ class Game{
         this.rockets = 40
         this.prizeSize = 5
         this.noteSpeed = 0.4
+        this.points = {
+            catch: 10,
+            victory: 1000,
+            hitActive: -5,
+            hitDead: -1,
+            lostCity: -100,
+            explodeRock: 3
+        }
+
         this.audioData = audioData
+
         console.log(audioData)
 
         this.score = 0;
@@ -315,7 +325,22 @@ class Game{
             color: 'white',
             backgroundColor: '#777777',
         })
-        volumeBox.html("<input id='game-volume' type='range' min='0' max='1000' value='500' onchange='VolumeSliderChange(arguments[0])'>")
+        let bar = $("<input id='game-volume' type='range' min='0' max='1000' value='500' onchange='VolumeSliderChange(arguments[0])'>")
+        volumeBox.html(bar)
+        bar.val(GetVolume()*1000)
+
+        // Add score box
+        this.scoreBox = $('<div>').appendTo(container)
+        this.scoreBox.css({
+            position: 'fixed',
+            top: this.height - 60,
+            left: this.width - 50 - 2,
+            width: 50,
+            height: 30,
+            border: '1px solid pink',
+            zIndex: 300,
+            color: 'white'
+        }).html(this.score)
 
         this.scene = new THREE.Scene();
 
@@ -567,13 +592,19 @@ class Game{
                 rock.stop(this)
                 this.moving.delete(rock)
                 this.rocks.delete(rock)
+                this.score += this.points.explodeRock
             }
         }
     }
 
     hitCity(city, damage, spot){
         this.explodeGraphic(spot.x, spot.y, 0.015)
-        if(city.health <= 0) return
+
+        if(city.health <= 0){
+            this.score += this.points.hitDead
+            return
+        }
+        this.score += this.points.hitActive
         let before = city.health
         city.health -= damage
 
@@ -588,6 +619,7 @@ class Game{
         }
 
         if(city.health <= 0){
+            this.score += this.points.lostCity
             city.active = false
             city.sprite.material.map = Sprites.get("Graphics/City_Fallen.png")
         }
@@ -749,15 +781,19 @@ class Game{
     draw(delta){
         this.renderer.render(this.scene, this.camera)
         this.rocketCounter.html(this.rockets)
+        this.scoreBox.html(this.score)
     }
 
     winPrize(obj){
+        this.score += this.points.catch
         this.rockets += this.prizeSize
     }
 
     finished(victory){
         if(!this.running) return;
+        if(victory) this.score += this.points.victory;
         this.running = false;
+        $('.final_score').html(this.score)
 
         // Add score to score cookie for this track
         let current = Cookies.getJSON(this.audioData.url) || {'victory': null, 'defeat': null}
