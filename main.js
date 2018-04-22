@@ -18,6 +18,66 @@ function randomIn(a, b){
     return Math.random() * (b - a) + a
 }
 
+function randomChoice(array){
+    return array[Math.floor(Math.random() * array.length)]
+}
+
+
+class ExplosionEffect{
+    constructor(game, x, y, radius){
+        this.x = x
+        this.y = y;
+        this.radius = radius
+
+        this.materials = []
+        for(let ii = 0; ii < 10; ii++){
+            this.materials[ii] = new THREE.MeshBasicMaterial({color: new THREE.Color(
+                Math.random() * 0.5 + 0.5,
+                Math.random() * 0.3,
+                Math.random() * 0.3
+            )})
+        }
+
+        this.particles = new Set()
+        while(this.particles.size < radius * 2000){
+            let a = Math.PI * 2 * Math.random()
+            let r = Math.random() * radius;
+            let box = new THREE.BoxGeometry(0.01, 0.01, 0.01)
+            let material = randomChoice(this.materials)
+            let mesh = new THREE.Mesh(box, material)
+            game.scene.add(mesh)
+
+            let x = this.x + Math.sin(a) * r
+            let y = this.y + Math.cos(a) * r
+
+            mesh.position.x = x
+            mesh.position.z = y
+
+            this.particles.add({
+                sprite: mesh,
+            })
+        }
+    }
+
+    update(game, delta){
+        for(let mat of this.materials){
+            mat.color.r += (Math.random() * 2 - 1) * delta
+            mat.color.g += (Math.random() * 2 - 1) * delta
+            mat.color.b += (Math.random() * 2 - 1) * delta
+        }
+
+        for(let par of this.particles){
+            par.sprite.position.x += (Math.random() * 2 - 1) * delta
+            par.sprite.position.y += (Math.random() * 2 - 1) * delta
+            par.sprite.position.z += (Math.random() * 2 - 1) * delta
+        }
+    }
+
+    get done(){
+        return this.particles.size == 0
+    }
+}
+
 class MovingThing{
     constructor(params){
         this._x = arg(params, 'x')
@@ -435,7 +495,9 @@ class Game{
     }
 
     explodeGraphic(x, y, radius){
-        console.warn("Make an explode graphic")
+        let exp = new ExplosionEffect(this, x, y, radius);
+        this.effects.add(exp)
+        this.moving.add(exp)
     }
 
     explode(x, y){
