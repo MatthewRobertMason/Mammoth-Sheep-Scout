@@ -48,12 +48,15 @@ function musicLoaded(){
 }
 
 function getPeaksAtThreshold(data, threshold) {
-    let channel = data.getChannelData(0)
+    let left = data.getChannelData(0)
+    let right = data.getChannelData(1)
     var peaksArray = [];
     var length = data.length;
 
+    threshold *= 2 // instead of dividing the two chanels to average them
+
     for(var i = 0; i < length; i++) {
-        if (channel[i] > threshold) {
+        if (left[i] + right[i] > threshold) {
             peaksArray.push(i);
             // Skip forward ~ 1/4s to get past this peak.
             i += 10000;
@@ -163,7 +166,7 @@ function analyzeMusic(buffer, callback){
 function filterMusicData(buffer, passType, callback)
 {
     // Create offline context
-    var offlineContext = new OfflineAudioContext(1, buffer.length, buffer.sampleRate);
+    var offlineContext = new OfflineAudioContext(2, buffer.length, buffer.sampleRate);
 
     // Create buffer source
     var source = offlineContext.createBufferSource();
