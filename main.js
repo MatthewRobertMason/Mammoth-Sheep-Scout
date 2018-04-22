@@ -791,8 +791,9 @@ class Game{
 
     finished(victory){
         if(!this.running) return;
-        this.score += this.points.victory;
+        if(victory) this.score += this.points.victory;
         this.running = false;
+        $('.final_score').html(this.score)
 
         // Add score to score cookie for this track
         let current = Cookies.getJSON(this.audioData.url) || {'victory': null, 'defeat': null}

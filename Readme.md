@@ -1,11 +1,8 @@
 Goals
 =====
 
-- music playing
-- volume controls
 - prizes have connection to the song
 - Backgrounds
-- score
 
 Stretch Goals
 =============
