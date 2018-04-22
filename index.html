@@ -279,7 +279,7 @@
         let soundsData = null
 
         function maybeStart(){
-          if(spritesReady && audioReady){
+          if(spritesReady && audioReady && soundsReady){
             console.warn("hide loading screen")
             startLevel(audioData, soundsData)
           }

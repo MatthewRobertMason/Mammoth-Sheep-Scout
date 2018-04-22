@@ -1,3 +1,5 @@
+'use strict';
+
 var Music = [
     "Audio/Iron Bacon.mp3",
     "Audio/Pump.mp3",
@@ -105,7 +107,7 @@ function GetMusic(url, callback){
             analyzeMusic(buffer, (data) => {
                 console.log("Music Analyzed")
 
-                musicData = {
+                let musicData = {
                     buffer: buffer,
                     url: url,
                     nodes: data
@@ -201,42 +203,44 @@ function filterMusicData(buffer, passType, callback)
 }
 
 function LoadAllSounds(callback){
-    var request = new XMLHttpRequest();
-    
     for(let name of Sounds.keys()){
+        if(Sounds.get(name) != null) continue
+
         // Prepare to to a resource request
-        request = new XMLHttpRequest();
+        let request = new XMLHttpRequest();
         request.open('GET', name, true);
         request.responseType = 'arraybuffer'; // force binary data
 
-        console.dir(request)
         // Decode asynchronously
         request.onload = function() {
             console.log("Sound Loaded");
+            console.log(request.response)
             audioContext.decodeAudioData(request.response, function(buffer) {
                 console.log("Sound Parsed")
-
                 Sounds.set(name, buffer)
+                console.log(Sounds)
                 AllSoundsLoaded(callback)
             });
         }
+
+        request.onerror = function(error){
+            console.error(error)
+        }
+
         request.send();
     }
+    return true
 }
 
 function AllSoundsLoaded(callback)
 {
-    var allSoundsLoaded = true;
     for(let name of Sounds.keys()){
-        if (Sounds[name] == null){
-            allSoundsLoaded = false;
+        if (Sounds.get(name) == null){
+            return;
         }
     }
 
-    if (allSoundsLoaded)
-    {
-        callback();
-    }
+    callback(Sounds);
 }
 
 function PlaySound(sound) {
@@ -246,8 +250,8 @@ function PlaySound(sound) {
     // Create a filter, panner, and gain node.
     //var lowpass = audioContext.createLowPass2Filter();
     //var panner = audioContext.createPanner();
-    var gainNode2 = audioContext.createGainNode();
-    gainNode2.gain.setValueAtTime(volume, 0);
+    var gainNode2 = audioContext.createGain();
+    gainNode2.gain.setValueAtTime(GetVolume(), 0);
     // Make connections
     //oneShotSound.connect(lowpass);
     //lowpass.connect(panner);
@@ -255,5 +259,5 @@ function PlaySound(sound) {
     oneShotSound.connect(gainNode2);
     gainNode2.connect(audioContext.destination);
 
-    oneShotSound.noteOn(0.0);
+    oneShotSound.start(0.0);
 }
