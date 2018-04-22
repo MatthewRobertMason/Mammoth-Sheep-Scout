@@ -243,7 +243,7 @@ function AllSoundsLoaded(callback)
     callback(Sounds);
 }
 
-function PlaySound(sound) {
+function PlaySound(sound, volume) {
     var oneShotSound = audioContext.createBufferSource();
     oneShotSound.buffer = sound;
 
@@ -251,7 +251,7 @@ function PlaySound(sound) {
     //var lowpass = audioContext.createLowPass2Filter();
     //var panner = audioContext.createPanner();
     var gainNode2 = audioContext.createGain();
-    gainNode2.gain.setValueAtTime(GetVolume(), 0);
+    gainNode2.gain.setValueAtTime(volume, 0);
     // Make connections
     //oneShotSound.connect(lowpass);
     //lowpass.connect(panner);

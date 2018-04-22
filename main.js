@@ -1,6 +1,6 @@
 'use strict'
 
-var soundVolume = 0.25
+var soundVolume = 0.1
 
 function arg(params, name, value){
     if(!params.hasOwnProperty(name)){
