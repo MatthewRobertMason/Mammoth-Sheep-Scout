@@ -815,9 +815,9 @@ class Game{
         $('.final_score').html(this.score)
 
         // Add score to score cookie for this track
-        let current = Cookies.getJSON(this.audioData.url) || {'victory': null, 'defeat': null}
-        if(victory) current.victory = Math.max(current.victory, this.score)
-        else current.defeat = Math.max(current.defeat, this.score)
+        let current = Cookies.getJSON(this.audioData.url) || {victory: '-Infinity', defeat: '-Infinity'}
+        if(victory) current.victory = String(Math.max(Number(current.victory), this.score))
+        else current.defeat = String(Math.max(Number(current.defeat), this.score))
         Cookies.set(this.audioData.url, current)
 
         // Bring up finished splash
@@ -830,7 +830,7 @@ class Game{
               url: 'http://jam-stats.douglass.ca:5000/send',
               jsonp: 'callback',
               dataType: 'jsonp',
-              data: {username: username, song: this.audioData.url, defeat: current.defeat, victory: current.victory},
+              data: {username: username, song: this.audioData.url, defeat: String(current.defeat), victory: String(current.victory)},
               done: data => console.log("data"),
               fail: error => console.error("error"),
               always: () => console.log("done")
