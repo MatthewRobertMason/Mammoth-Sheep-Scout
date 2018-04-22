@@ -25,8 +25,9 @@ var loadedMusic = new Map();
 try {
     window.AudioContext = window.AudioContext||window.webkitAudioContext;
     audioContext = new AudioContext();
+
     audioVolumeNode = audioContext.createGain();
-    audioVolumeNode.gain.value = 0.1; // default to 10% VolumeSliderChange
+    audioVolumeNode.gain.setValueAtTime(GetVolume(), 0);
     audioVolumeNode.connect(audioContext.destination);
 }
 catch(e) {
@@ -78,12 +79,14 @@ function VolumeSliderChange(event){
 }
 
 function SetVolume(value){
-    console.warn("Not setting volume", value)
+    audioVolumeNode.gain.setValueAtTime(value, audioContext.currentTime)
+    Cookies.set('volume', value)
 }
 
 function GetVolume(){
-    console.warn("not getting volume")
-    return 0.2
+    let val = Number(Cookies.get('volume'))
+    if(val != val) return 0.1; // default to 10% VolumeSliderChange
+    return val;
 }
 
 function GetMusic(url, callback){
