@@ -11,38 +11,65 @@
 			  crossorigin="anonymous"></script>
     <script src='Stats.js'></script>
     <script src='main.js'></script>
+    <script src='sprites.js'></script>
   </head>
   <body>
 
     <div id='main'></div>
 
     <script>
-      let stats = new Stats()
-      document.body.appendChild(stats.dom);
-      $(stats.dom).css({
-        left: '',
-        right: 0,
-      })
+      function start(){
+        let stats = new Stats()
+        document.body.appendChild(stats.dom);
+        $(stats.dom).css({
+          left: '',
+          right: 0,
+        })
 
-      // Launch an instance of the game with the tag above as its connection to the page
-      let game = new Game($('#main'))
-      var lastTimestamp = 0
-      var running = true;
+        // Launch an instance of the game with the tag above as its connection to the page
+        let game = new Game($('#main'))
+        var lastTimestamp = 0
+        var running = true;
 
-      function render(timestamp){
-        stats.begin()
-        try{
-          window.requestAnimationFrame(render)
-          let delta = (timestamp - lastTimestamp)/1000
-          lastTimestamp = timestamp
-          game.update(delta)
-          game.draw(delta)
-        } catch (error){
-          console.error(error)
+        function render(timestamp){
+          stats.begin()
+          try{
+            window.requestAnimationFrame(render)
+            let delta = (timestamp - lastTimestamp)/1000
+            lastTimestamp = timestamp
+            game.update(delta)
+            game.draw(delta)
+          } catch (error){
+            console.error(error)
+          }
+          stats.end()
         }
-        stats.end()
+        render(0)
       }
-      render(0)
+
+
+      {
+        let domReady = false
+        let spritesReady = false
+        let audioReady = true
+
+        function maybeStart(){
+          if(domReady && spritesReady && audioReady) start()
+        }
+
+        // Ask three to load the graphics
+        LoadAllSprites(() => {
+          spritesReady = true;
+          maybeStart()
+        })
+
+        // Wait for jquery to say the dom is loaded
+        $(() => {
+          domReady = true;
+          maybeStart()
+        })
+      }
+
     </script>
   </body>
 </html>

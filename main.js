@@ -184,9 +184,7 @@ class Prize extends MovingThing {
 
     caught(game){
         game.scene.remove(this.sprite)
-
-        let graphic = new THREE.TextureLoader().load("Graphics/AirDropParachute.png")
-        let material = new THREE.SpriteMaterial({map: graphic, color: 0xffffff});
+        let material = new THREE.SpriteMaterial({map: Sprites.get("Graphics/AirDropParachute.png"), color: 0xffffff});
         let sprite = new THREE.Sprite(material)
         this.sprite.position.y = sprite.position.y = 0
         sprite.scale.x = 1/20
