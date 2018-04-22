@@ -10,6 +10,7 @@
 			  src="https://code.jquery.com/jquery-3.3.1.js"
 			  integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
 			  crossorigin="anonymous"></script>
+    <script src='Stats.js'></script>
     <script src='main.js'></script>
   </head>
   <body>
@@ -17,12 +18,20 @@
     <div id='main'></div>
 
     <script>
+      let stats = new Stats()
+      document.body.appendChild(stats.dom);
+      $(stats.dom).css({
+        left: '',
+        right: 0,
+      })
+
       // Launch an instance of the game with the tag above as its connection to the page
       let game = new Game($('#main'))
       var lastTimestamp = 0
       var running = true;
 
       function render(timestamp){
+        stats.begin()
         try{
           window.requestAnimationFrame(render)
           let delta = (timestamp - lastTimestamp)/1000
@@ -32,6 +41,7 @@
         } catch (error){
           console.error(error)
         }
+        stats.end()
       }
       render(0)
     </script>
