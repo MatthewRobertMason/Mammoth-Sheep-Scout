@@ -1,15 +1,5 @@
 'use strict'
 
-var audioContext;
-
-try {
-    window.AudioContext = window.AudioContext||window.webkitAudioContext;
-    audioContext = new AudioContext();
-}
-catch(e) {
-    alert('Web Audio API is not supported in this browser');
-}
-
 function arg(params, name, value){
     if(!params.hasOwnProperty(name)){
         if(typeof value === 'undefined'){
@@ -184,7 +174,9 @@ class Prize extends MovingThing {
 
     caught(game){
         game.scene.remove(this.sprite)
-        let material = new THREE.SpriteMaterial({map: Sprites.get("Graphics/AirDropParachute.png"), color: 0xffffff});
+
+        let graphic = new THREE.TextureLoader().load("Graphics/AirDropParachute.png")
+        let material = new THREE.SpriteMaterial({map: graphic, color: 0xffffff});
         let sprite = new THREE.Sprite(material)
         this.sprite.position.y = sprite.position.y = 0
         sprite.scale.x = 1/20
@@ -695,18 +687,4 @@ class Game{
     winPrize(obj){
         this.rockets += this.prizeSize
     }
-}
-
-function getPeaksAtThreshold(data, threshold) {
-    var peaksArray = [];
-    var length = data.length;
-    for(var i = 0; i < length;) {
-        if (data[i] > threshold) {
-            peaksArray.push(i);
-            // Skip forward ~ 1/4s to get past this peak.
-            i += 10000;
-        }
-        i++;
-    }
-    return peaksArray;
 }
