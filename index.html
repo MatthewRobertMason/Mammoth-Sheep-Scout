@@ -5,17 +5,23 @@
     <title>SAVE THE WORLD</title>
     <meta name="description" content="HELLO THIS IS WEBPAGE">
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/92/three.js"></script>
+    <!-- <script src="https://cdnjs.com/libraries/rangeslider.js"></script> -->
     <script
 			  src="https://code.jquery.com/jquery-3.3.1.js"
 			  integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
 			  crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
+
     <script src='Stats.js'></script>
     <script src='main.js'></script>
     <script src='sprites.js'></script>
     <script src='audio.js'></script>
 
     <style>
+      #main {
+        display: none;
+      }
+
       .menu {
         border: 1px solid black;
         padding: 5px;
@@ -67,9 +73,13 @@
 
         <h4>For LDJAM 41: Combine 2 Incompatable Genres</h4>
 
-
         Song: <select id='songSelect'></select>
         <button onClick='submitMenu()'>Start</button>
+
+        <div>
+          <input id='menu-volume' type="range" min='0' max='1000' value='500' onchange='VolumeSliderChange(arguments[0])'>
+        </div>
+
       </div>
       <div class='menu'>
         <h3>Scoreboard (Local only)</h3>
@@ -98,6 +108,7 @@
     <script>
 
       function menu(){
+        $('#menu-volume').val(GetVolume()*1000)
         $('#menu').css({display: 'block'})
         let select = $('#songSelect')
         for(let ii = 0; ii < Music.length; ii++){
@@ -133,6 +144,7 @@
         })
 
         // Launch an instance of the game with the tag above as its connection to the page
+        $('#main').css({display: 'block'})
         let game = new Game($('#main'), audioData)
         var lastTimestamp = 0
         var running = true;

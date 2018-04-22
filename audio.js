@@ -69,6 +69,19 @@ function getPeaksAtThreshold(data, threshold) {
     return peaksArray;
 }
 
+function VolumeSliderChange(event){
+    SetVolume($(event.target).val()/1000)
+}
+
+function SetVolume(value){
+    console.warn("Not setting volume", value)
+}
+
+function GetVolume(){
+    console.warn("not getting volume")
+    return 0.2
+}
+
 function GetMusic(url, callback){
     // Load the song from cache if we already loaded it
     if(loadedMusic.has(url)) return loadedMusic.get(url)

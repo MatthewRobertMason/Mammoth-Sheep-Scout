@@ -289,6 +289,7 @@ class Game{
             zIndex: 200
         })
 
+        // Add an html element over the game to display rockets
         this.rocketCounter = $('<div>').appendTo(container)
         this.rocketCounter.css({
             position: 'fixed',
@@ -300,6 +301,21 @@ class Game{
             zIndex: 300,
             color: 'white'
         }).html(this.rockets)
+
+        // Add an html element over the game to show a volume control
+        let volumeBox = $('<div>').appendTo(container)
+        volumeBox.css({
+            position: 'fixed',
+            top: this.height - 60,
+            left: 0,
+            width: 200,
+            height: 30,
+            border: '1px solid pink',
+            zIndex: 300,
+            color: 'white',
+            backgroundColor: '#777777',
+        })
+        volumeBox.html("<input id='game-volume' type='range' min='0' max='1000' value='500' onchange='VolumeSliderChange(arguments[0])'>")
 
         this.scene = new THREE.Scene();
 
