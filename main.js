@@ -1,18 +1,14 @@
 'use strict'
-/*
-var audioContext;
-window.addEventListner('load', init, false);
 
-function init() {
-    try {
-        window.AudioContext = window.AudioContext||window.webkitAudioContext;
-        audioContext = new AudioContext();
-    }
-    catch(e) {
-        alert('Web Audio API is not supported in this browser');
-    }
+var audioContext;
+
+try {
+    window.AudioContext = window.AudioContext||window.webkitAudioContext;
+    audioContext = new AudioContext();
 }
-*/
+catch(e) {
+    alert('Web Audio API is not supported in this browser');
+}
 
 function arg(params, name, value){
     if(!params.hasOwnProperty(name)){
