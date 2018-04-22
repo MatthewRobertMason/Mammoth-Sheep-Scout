@@ -1,6 +1,6 @@
 'use strict'
 
-var soundVolume = 0.1
+var soundVolume = 0.7
 
 function arg(params, name, value){
     if(!params.hasOwnProperty(name)){
@@ -766,7 +766,7 @@ class Game{
     }
 
     onMouseDown(event){
-        if(event.button != 0) return;
+        if(event.button != 0 || event.target.tagName != 'CANVAS') return;
         if(!this.running) return
 
         let x = event.offsetX / this.width
