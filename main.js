@@ -460,13 +460,16 @@ class Game{
 
         // Given the velocity, and distance, we know the delay
         console.log("note speed: " + this.noteSpeed)
+        console.log(Date.now())
         //console.log(hitBox, this.noteSpeed)
         this.noteDelay = hitBox/this.noteSpeed
         //console.log(this.noteDelay)
         console.log("note delay: " + this.noteDelay)
-        PlayMusic(this.audioData.buffer)
-        this.startTime = audioContext.currentTime;
-        this.lastFrameSample = Math.floor(this.noteDelay * this.audioData.buffer.sampleRate)
+        this.startTime = audioContext.currentTime + 0.2;
+        PlayMusic(this.audioData.buffer, this.startTime)
+        this.lastFrameSample = Math.floor((this.noteDelay + 0.2) * this.audioData.buffer.sampleRate)
+
+        console.log(Date.now())
     }
 
     newCity(x, y){
@@ -656,8 +659,6 @@ class Game{
         let before = city.health
         city.health -= damage
 
-        console.log(city.health, damage)
-
         if(before > 0.66 && city.health <= 0.66){
             city.sprite.material.map = Sprites.get("Graphics/City_1.png")
             PlaySound(this.soundsData.get("Sounds/CityExplosion.wav"), soundVolume)
@@ -686,24 +687,26 @@ class Game{
         return high > obj.y && obj.y > low
     }
 
-    // Update the game state. delta in ms
+    // Update the game state. delta in seconds
     update(delta){
         if(!this.running) return
 
         // Figure out how far into the song we are
         let timeInSong = audioContext.currentTime - this.startTime
-        let samplesInSong = Math.floor((this.noteDelay + timeInSong) * this.audioData.buffer.sampleRate)
-        for(let index = 0; index < 4; index++){
-            let foundNote = false
-            let notes = this.notes[index]
-            while(notes[0] < this.lastFrameSample) notes.shift()
-            while(notes[0] < samplesInSong){
-                foundNote = true
-                notes.shift()
+        if(timeInSong > 0){
+            let samplesInSong = Math.floor((this.noteDelay + timeInSong) * this.audioData.buffer.sampleRate)
+            for(let index = 0; index < 4; index++){
+                let foundNote = false
+                let notes = this.notes[index]
+                while(notes[0] < this.lastFrameSample) notes.shift()
+                while(notes[0] < samplesInSong){
+                    foundNote = true
+                    notes.shift()
+                }
+                if(foundNote) this.newPrize(index)
             }
-            if(foundNote) this.newPrize(index)
+            this.lastFrameSample = samplesInSong
         }
-        this.lastFrameSample = samplesInSong
 
         // Check for lose
         var notLost = false

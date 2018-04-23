@@ -147,11 +147,11 @@ function GetMusic(url, callback, difficultyMultiplier){
     request.send();
 }
 
-function PlayMusic(buffer) {
+function PlayMusic(buffer, startTime) {
     var source = audioContext.createBufferSource(); // creates a sound source
     source.buffer = buffer;                         // tell the source which sound to play
     //source.connect(audioContext.destination);     // connect the source to the context's destination (the speakers)
-    source.start(0);                                // play the source now
+    source.start(startTime);                        // play the source now
                                                     // note: on older systems, may have to use deprecated noteOn(time);
     source.connect(audioVolumeNode);
     audioVolumeNode.connect(audioContext.destination);
