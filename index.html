@@ -11,11 +11,9 @@
 			  integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
 			  crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
-
     <link href="https://fonts.googleapis.com/css?family=Josefin+Sans" rel="stylesheet">
-
 
     <script src='Stats.js'></script>
     <script src='main.js'></script>
@@ -205,6 +203,10 @@
             <option value='3'>Nonsense</option>
           </select>
           <script>
+
+            // copies of the text for the lederboard
+            var DifficultyKeys = ['Relaxed', 'Easy', 'Normal', 'Hard', 'Very Hard', 'Nonsense']
+
             if(typeof Cookies.get('difficulty') == 'undefined') SetDifficulty({target: document.getElementById('difficulty')})
             $('#difficulty').val(Cookies.get('difficulty'));
 
@@ -362,12 +364,11 @@
           box.append($('<h4>').text(heading))
           let table = $('<table>').addClass('minimalistBlack').appendTo(box)
           table.append($("<tr><th>Player</th><th>In Victory</th><th>In Defeat</th></tr>"))
-          for(let player of Object.keys(data)){
+          for(let entry of data){
             let row = $('<tr>').appendTo(table)
-            $('<td>').html(player).appendTo(row)
-            $('<td>').html(data[player][0]).appendTo(row)
-            $('<td>').html(data[player][1]).appendTo(row)
-
+            $('<td>').html(entry[0]).appendTo(row)
+            $('<td>').html(entry[1][0]).appendTo(row)
+            $('<td>').html(entry[1][1]).appendTo(row)
           }
           return box
         }
@@ -381,8 +382,9 @@
             if(!data.hasOwnProperty(file)) continue;
             $('<h3>').html(name).appendTo(board)
             let group = $('<div>').appendTo(board)
-            for(let key of Object.keys(data[file])){
-              makeTable(key, data[file][key]).appendTo(group)
+            for(let key of DifficultyKeys){
+              if(data[file].hasOwnProperty(key))
+                makeTable(key, data[file][key]).appendTo(group)
             }
             group.append($("<div style='clear:both'></div>"))
           }
