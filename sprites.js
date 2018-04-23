@@ -14,6 +14,7 @@ var Sprites = new Map([
     ["Graphics/City_1.png", null],
     ["Graphics/City_2.png", null],
     ["Graphics/City_Fallen.png", null],
+    ["Graphics/Star.png", null],
 ])
 
 

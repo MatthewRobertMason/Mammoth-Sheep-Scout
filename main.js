@@ -24,6 +24,25 @@ function randomChoice(array){
     return array[Math.floor(Math.random() * array.length)]
 }
 
+class Star {
+    constructor (game, scene, x, y){
+        let graphic = Sprites.get("Graphics/Star.png")
+        let material = new THREE.SpriteMaterial({map: graphic, color: new THREE.Color(1, 1, 1)});
+        let sprite = new THREE.Sprite(material)
+        this.sprite = sprite;
+        sprite.position.x = x
+        sprite.position.y = -2
+        sprite.position.z = y
+        let scaleMod = (Math.random() * 0.02) - 0.01
+        sprite.scale.x = 0.05 + scaleMod
+        sprite.scale.y = 0.05 + scaleMod
+        scene.add(sprite)
+        this.material = material
+    }
+    update(){
+        this.material.color = new THREE.Color(1 - Math.random() * 0.5, 1 - Math.random() * 0.5, 1 - Math.random() * 0.5);
+    }
+}
 
 class ExplosionEffect{
     constructor(game, x, y, radius){
@@ -470,6 +489,12 @@ class Game{
         this.lastFrameSample = Math.floor((this.noteDelay + 0.2) * this.audioData.buffer.sampleRate)
 
         console.log(Date.now())
+
+        let randStars = Math.floor((Math.random() * 10) + 10);
+        for (let numStar = 0; numStar < randStars; numStar++){
+            let star = new Star(this, this.scene, Math.random(), Math.random()/5);
+            this.moving.add(star);
+        }
     }
 
     newCity(x, y){
