@@ -40,8 +40,9 @@ def cleanName(name):
 def setValue():
     try:
         username = request.args['username'][:20]
-        song = request.args['song']
-        score = [request.args.get('victory', None), request.args.get('defeat', None)]
+        song = request.args['song'][:100]
+        difficulty = request.args['difficulty'][:20]
+        score = [request.args['victory'][:10], request.args['defeat'][:10]]
 
         print(username, song, score)
 
@@ -52,7 +53,9 @@ def setValue():
 
         if song not in data:
             data[song] = {}
-        data[song][username] = score
+        if difficulty not in data[song]:
+            data[song][difficulty] = {}
+        data[song][difficulty][username] = score
 
         json.dump(data, open('important-data.json', 'w'))
 

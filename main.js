@@ -243,8 +243,7 @@ class Missile extends Targeted {
     constructor(params){
         params.rotation = -Math.PI/2
         super(params)
-        this.trail = null
-        this.trailTime = 0.1
+        this.trailTime = 0.08
     }
 }
 
@@ -280,7 +279,7 @@ class Game{
         // Initialize the graphics library
         this.aspect = 1
         this.timeUntilRock = randomIn(...this.rockRange);
-        this.width = 800;
+        this.width = 64*10 * 1.5;
         this.height = this.width/this.aspect;
 
         this.container = container;
@@ -360,11 +359,11 @@ class Game{
         this.scene.add(ambientLight);
 
         // Add grid while developing
-        var gridHelper = new THREE.GridHelper(2, 20);
-        gridHelper.position.x = 0.5
-        gridHelper.position.z = 0.5
-        gridHelper.position.y = -1
-        this.scene.add(gridHelper);
+        // var gridHelper = new THREE.GridHelper(2, 20);
+        // gridHelper.position.x = 0.5
+        // gridHelper.position.z = 0.5
+        // gridHelper.position.y = -1
+        // this.scene.add(gridHelper);
 
         // Add the cannon
         {
@@ -492,13 +491,13 @@ class Game{
         start.z += direction.y * 0.04
         let end = new THREE.Vector3(x, 0, y)
 
-        let graphic = Sprites.get("Graphics/Rocket.png")
+        let graphic = Sprites.get("Graphics/Rocket2.png")
         let material = new THREE.SpriteMaterial({map: graphic, color: 0xffffff});
         let sprite = new THREE.Sprite(material)
         this.scene.add(sprite)
         sprite.position.copy(start)
-        sprite.scale.x = 1/40
-        sprite.scale.y = 1/40
+        sprite.scale.x = 1/20
+        sprite.scale.y = 1/20
 
         let rocket = new Missile({
             start: start,
@@ -818,7 +817,7 @@ class Game{
         let current = Cookies.getJSON(this.audioData.url) || {victory: '-Infinity', defeat: '-Infinity'}
         if(victory) current.victory = String(Math.max(Number(current.victory), this.score))
         else current.defeat = String(Math.max(Number(current.defeat), this.score))
-        Cookies.set(this.audioData.url, current)
+        Cookies.set(this.audioData.url, current, {expires: 30})
 
         // Bring up finished splash
         if(victory) $('#victory').show()
@@ -830,7 +829,13 @@ class Game{
               url: 'http://jam-stats.douglass.ca:5000/send',
               jsonp: 'callback',
               dataType: 'jsonp',
-              data: {username: username, song: this.audioData.url, defeat: String(current.defeat), victory: String(current.victory)},
+              data: {
+                  username: username,
+                  song: this.audioData.url,
+                  difficulty: Cookies.get('difficulty-name'),
+                  defeat: String(current.defeat),
+                  victory: String(current.victory)
+              },
               done: data => console.log("data"),
               fail: error => console.error("error"),
               always: () => console.log("done")

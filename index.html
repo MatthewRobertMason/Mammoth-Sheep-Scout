@@ -10,7 +10,12 @@
 			  src="https://code.jquery.com/jquery-3.3.1.js"
 			  integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
 			  crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
+
+    <link href="https://fonts.googleapis.com/css?family=Josefin+Sans" rel="stylesheet">
+
 
     <script src='Stats.js'></script>
     <script src='main.js'></script>
@@ -18,6 +23,10 @@
     <script src='audio.js'></script>
 
     <style>
+      body {
+        font-family: 'Josefin Sans', sans-serif;
+      }
+
       #main {
         display: none;
       }
@@ -36,6 +45,10 @@
         display: none;
       }
 
+      #loading {
+        display: none;
+      }
+
       .shadowbox {
         position: absolute;
         top: 0px;
@@ -49,6 +62,7 @@
 
       .overlay {
         position: absolute;
+        padding: 15px;
         top: 20%;
         left: 20%;
         right: 20%;
@@ -74,6 +88,50 @@
         flex-direction: row; */
       }
 
+      .score-box{
+        float: left;
+        text-align: center;
+        margin-right: 10px;
+        margin-bottom: 10px;
+      }
+
+      table.minimalistBlack {
+        max-width: 1000px;
+        border: 3px solid #000000;
+        width: 100%;
+        text-align: left;
+        border-collapse: collapse;
+      }
+      table.minimalistBlack td, table.minimalistBlack th {
+        border: 1px solid #000000;
+        padding: 5px 4px;
+      }
+      table.minimalistBlack tbody td {
+        font-size: 13px;
+      }
+      table.minimalistBlack thead {
+        background: #CFCFCF;
+        background: -moz-linear-gradient(top, #dbdbdb 0%, #d3d3d3 66%, #CFCFCF 100%);
+        background: -webkit-linear-gradient(top, #dbdbdb 0%, #d3d3d3 66%, #CFCFCF 100%);
+        background: linear-gradient(to bottom, #dbdbdb 0%, #d3d3d3 66%, #CFCFCF 100%);
+        border-bottom: 3px solid #000000;
+      }
+      table.minimalistBlack thead th {
+        font-size: 15px;
+        font-weight: bold;
+        color: #000000;
+        text-align: left;
+      }
+      table.minimalistBlack tfoot {
+        font-size: 14px;
+        font-weight: bold;
+        color: #000000;
+        border-top: 3px solid #000000;
+      }
+      table.minimalistBlack tfoot td {
+        font-size: 14px;
+      }
+
     </style>
   </head>
   <body>
@@ -86,15 +144,17 @@
         <h2>Rhythm Defence</h2>
         <h4>For LDJAM 41: Combine 2 Incompatable Genres</h4>
 
+        <div>
         Song: <select id='songSelect'></select>
         <button onClick='submitMenu()'>Start</button>
+      </div>
 
         <div>
-          <input id='menu-volume' type="range" min='0' max='1000' value='500' onchange='VolumeSliderChange(arguments[0])'>
+          Volume: <input id='menu-volume' type="range" min='0' max='1000' value='500' onchange='VolumeSliderChange(arguments[0])'>
         </div>
 
         <div>
-          <select id='difficulty' onchange='SetDifficulty(arguments[0])'>
+          Difficulty: <select id='difficulty' onchange='SetDifficulty(arguments[0])'>
             <option value='0.5'>Relaxed</option>
             <option value='0.8'>Easy</option>
             <option selected value='1'>Normal</option>
@@ -108,8 +168,8 @@
 
             function SetDifficulty(event){
               let target = $(event.target);
-              Cookies.set('difficulty', target.val())
-              Cookies.set('difficulty-name', target[0].selectedOptions[0].text)
+              Cookies.set('difficulty', target.val(), {expires: 30})
+              Cookies.set('difficulty-name', target[0].selectedOptions[0].text, {expires: 30})
             }
 
           </script>
@@ -118,7 +178,7 @@
       </div>
       <div class='menu'>
         <h3>Scoreboard (Local only)</h3>
-        <table id='scoreboard'>
+        <table id='scoreboard' class='minimalistBlack'>
           <tr><th>Track</th><th>In Victory</th><th>In Defeat</th></tr>
         </table>
       </div>
@@ -170,6 +230,15 @@
       </div>
     </div>
 
+    <div id='loading'>
+      <div class="shadowbox"></div>
+      <div class="overlay">
+        <h4>Loading</h4>
+
+        <p> This shouldn't take too long...</p>
+      </div>
+    </div>
+
     <div id='victory'>
       <div class="shadowbox"></div>
       <div class="overlay">
@@ -196,7 +265,7 @@
 
       function SetName(){
         let value = $('#username').val()
-        Cookies.set('username', value)
+        Cookies.set('username', value, {expires: 30})
         console.log('username set to', value)
       }
 
@@ -222,6 +291,21 @@
           $('<td>').html(current.defeat != null ? current.defeat : 'NA').appendTo(row)
         }
 
+        function makeTable(heading, data){
+          let box = $('<div>').addClass('score-box')
+          box.append($('<h4>').text(heading))
+          let table = $('<table>').addClass('minimalistBlack').appendTo(box)
+          table.append($("<tr><th>Player</th><th>In Victory</th><th>In Defeat</th></tr>"))
+          for(let player of Object.keys(data)){
+            let row = $('<tr>').appendTo(table)
+            $('<td>').html(player).appendTo(row)
+            $('<td>').html(data[player][0]).appendTo(row)
+            $('<td>').html(data[player][1]).appendTo(row)
+
+          }
+          return box
+        }
+
         function loadLeaderboard(data){
           console.log(data)
           let board = $('#scoreTables');
@@ -229,16 +313,15 @@
             let file = Music[ii];
             let name = SongNames[ii];
             if(!data.hasOwnProperty(file)) continue;
-            $('<h4>').html(name).appendTo(board)
-            let table = $('<table>').appendTo(board)
-            table.append($("<tr><th>Player</th><th>In Victory</th><th>In Defeat</th></tr>"))
-            for(let player of Object.keys(data[file])){
-              let row = $('<tr>').appendTo(table)
-              $('<td>').html(player).appendTo(row)
-              $('<td>').html(data[file][player][0]).appendTo(row)
-              $('<td>').html(data[file][player][1]).appendTo(row)
+            $('<h3>').html(name).appendTo(board)
+            let group = $('<div>').appendTo(board)
+            for(let key of Object.keys(data[file])){
+              makeTable(key, data[file][key]).appendTo(group)
             }
           }
+          board.accordion({
+            heightStyle: "content" ,
+          })
         }
 
         //
@@ -290,8 +373,7 @@
       function startLoadingLevel(path){
 
         $('#menu').css({display: 'none'})
-
-        console.warn("Show loading screen")
+        $('#loading').css({display: 'block'})
 
         let spritesReady = false
         let audioReady = false
@@ -301,7 +383,7 @@
 
         function maybeStart(){
           if(spritesReady && audioReady && soundsReady){
-            console.warn("hide loading screen")
+            $('#loading').css({display: 'none'})
             startLevel(audioData, soundsData)
           }
         }

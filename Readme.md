@@ -2,6 +2,7 @@ Goals
 =====
 
 - Backgrounds
+- limit leaderboard output
 
 Stretch Goals
 =============
