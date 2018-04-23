@@ -388,7 +388,7 @@
         //
         if(Cookies.get('username')) $('#username').val(Cookies.get('username'))
         $.ajax({
-          url: 'http://jam-stats.douglass.ca:5000/board',
+          url: 'https://jam-stats.douglass.ca:5000/board',
           jsonp: 'callback',
           dataType: 'jsonp',
           success: loadLeaderboard,

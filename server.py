@@ -64,3 +64,9 @@ def setValue():
 
     finally:
         return jsonify({'status': 'ok'})
+
+
+if __name__ == "__main__":
+    cert = '/etc/letsencrypt/live/jam-stats.douglass.ca/cert.pem'
+    key = '/etc/letsencrypt/live/jam-stats.douglass.ca/privkey.pem'
+    app.run(ssl_context=(cert, key), host='0.0.0.0')
