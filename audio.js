@@ -98,6 +98,7 @@ function getPeaksAtThreshold(data, threshold, desiredValue, desiredThreshold) {
     }
 
     console.log("Number of peaks: " + peaksArray.length)
+    console.dir(peaksArray)
     return peaksArray;
 }
 
