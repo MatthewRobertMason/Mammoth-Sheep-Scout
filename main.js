@@ -304,7 +304,7 @@ class Game{
         // Add an html element over the game to display rockets
         this.rocketCounter = $('<div>').appendTo(container)
         this.rocketCounter.css({
-            position: 'fixed',
+            position: 'absolute',
             top: this.height - 60,
             left: (this.width - 40)/2,
             width: 40,
@@ -317,7 +317,7 @@ class Game{
         // Add an html element over the game to show a volume control
         let volumeBox = $('<div>').appendTo(container)
         volumeBox.css({
-            position: 'fixed',
+            position: 'absolute',
             top: this.height - 60,
             left: 0,
             width: 200,
@@ -334,7 +334,7 @@ class Game{
         // Add score box
         this.scoreBox = $('<div>').appendTo(container)
         this.scoreBox.css({
-            position: 'fixed',
+            position: 'absolute',
             top: this.height - 60,
             left: this.width - 50 - 2,
             width: 50,

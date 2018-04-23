@@ -25,6 +25,7 @@
     <style>
       body {
         font-family: 'Josefin Sans', sans-serif;
+        background-color: #f7f7f7;
       }
 
       #main {
@@ -35,6 +36,7 @@
         border: 1px solid black;
         padding: 5px;
         margin: 5px;
+        background-color: #ffffff;
       }
 
       #victory {
@@ -49,8 +51,12 @@
         display: none;
       }
 
+      #confirm-anon {
+        display: none;
+      }
+
       .shadowbox {
-        position: absolute;
+        position: fixed;
         top: 0px;
         left: 0px;
         width: 100%;
@@ -61,7 +67,7 @@
       }
 
       .overlay {
-        position: absolute;
+        position: fixed;
         padding: 15px;
         top: 20%;
         left: 20%;
@@ -146,7 +152,7 @@
 
         <div>
         Song: <select id='songSelect'></select>
-        <button onClick='submitMenu()'>Start</button>
+        <button onClick='maybeSubmitMenu()'>Start</button>
       </div>
 
         <div>
@@ -261,6 +267,19 @@
       </div>
     </div>
 
+    <div id='confirm-anon'>
+      <div class="shadowbox"></div>
+      <div class="overlay">
+        <h4> Wait! </h4>
+
+        <p> You haven't set a username. </p>
+        <p> Your score won't be shared unless you do. </p>
+        <p> <button onclick="$('#confirm-anon').css({display: 'none'})">Go back! I want to set one.</button> </p>
+        <p> <button onclick="submitMenu()">Just let me play.</button> </p>
+
+      </div>
+    </div>
+
     <script>
 
       function SetName(){
@@ -335,7 +354,17 @@
       }
       $(menu)
 
+      function maybeSubmitMenu(){
+        let username = Cookies.get('username');
+        if(typeof username === 'undefined' || username == ''){
+          $('#confirm-anon').css({display: 'block'})
+        } else {
+          submitMenu()
+        }
+      }
+
       function submitMenu(){
+        $('#confirm-anon').css({display: 'none'})
         startLoadingLevel($('#songSelect').val())
       }
 
