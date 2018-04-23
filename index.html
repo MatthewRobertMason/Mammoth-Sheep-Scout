@@ -14,6 +14,8 @@
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
 
+    <link href="https://fonts.googleapis.com/css?family=Josefin+Sans" rel="stylesheet">
+
 
     <script src='Stats.js'></script>
     <script src='main.js'></script>
@@ -21,6 +23,10 @@
     <script src='audio.js'></script>
 
     <style>
+      body {
+        font-family: 'Josefin Sans', sans-serif;
+      }
+
       #main {
         display: none;
       }
@@ -39,6 +45,10 @@
         display: none;
       }
 
+      #loading {
+        display: none;
+      }
+
       .shadowbox {
         position: absolute;
         top: 0px;
@@ -52,6 +62,7 @@
 
       .overlay {
         position: absolute;
+        padding: 15px;
         top: 20%;
         left: 20%;
         right: 20%;
@@ -219,6 +230,15 @@
       </div>
     </div>
 
+    <div id='loading'>
+      <div class="shadowbox"></div>
+      <div class="overlay">
+        <h4>Loading</h4>
+
+        <p> This shouldn't take too long...</p>
+      </div>
+    </div>
+
     <div id='victory'>
       <div class="shadowbox"></div>
       <div class="overlay">
@@ -353,8 +373,7 @@
       function startLoadingLevel(path){
 
         $('#menu').css({display: 'none'})
-
-        console.warn("Show loading screen")
+        $('#loading').css({display: 'block'})
 
         let spritesReady = false
         let audioReady = false
@@ -364,7 +383,7 @@
 
         function maybeStart(){
           if(spritesReady && audioReady && soundsReady){
-            console.warn("hide loading screen")
+            $('#loading').css({display: 'none'})
             startLevel(audioData, soundsData)
           }
         }
