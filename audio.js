@@ -65,7 +65,7 @@ function getPeaksAtThreshold(data, threshold, desiredValue, desiredThreshold) {
             if (left[i] + right[i] > threshold) {
                 peaksArray.push(i);
                 // Skip forward ~ 1/4s to get past this peak.
-                i += 10000;
+                i += (audioContext.sampleRate/4);
             }
         }
 
