@@ -228,6 +228,7 @@ function filterMusicData(buffer, passType, callback)
     // Act on the result
     offlineContext.oncomplete = function(e) {
         // Filtered buffer!
+        console.dir(e.renderedBuffer)
         if(callback) callback(e.renderedBuffer)
     };
 }
