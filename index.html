@@ -421,7 +421,7 @@
         // Launch an instance of the game with the tag above as its connection to the page
         $('#main').css({display: 'block'})
         let game = new Game($('#main'), audioData, soundsData)
-        var lastTimestamp = 0
+        var lastTimestamp = null
         var running = true;
 
         function render(timestamp){
@@ -437,7 +437,11 @@
           }
           stats.end()
         }
-        render(0)
+
+        window.requestAnimationFrame(timestamp => {
+          lastTimestamp = timestamp
+          window.requestAnimationFrame(render);
+        })
       }
 
 
