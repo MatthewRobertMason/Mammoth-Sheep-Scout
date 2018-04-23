@@ -464,7 +464,7 @@ class Game{
         this.noteDelay = hitBox/this.noteSpeed
         //console.log(this.noteDelay)
         console.log("note delay: " + this.noteDelay)
-        //PlayMusic(this.audioData.buffer)
+        PlayMusic(this.audioData.buffer)
         this.startTime = audioContext.currentTime;
         this.lastFrameSample = Math.floor(this.noteDelay * this.audioData.buffer.sampleRate)
     }
