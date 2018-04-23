@@ -2,6 +2,8 @@ Goals
 =====
 
 - Backgrounds
+- loading screen
+- limit leaderboard output
 
 Stretch Goals
 =============

@@ -10,7 +10,10 @@
 			  src="https://code.jquery.com/jquery-3.3.1.js"
 			  integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
 			  crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
+
 
     <script src='Stats.js'></script>
     <script src='main.js'></script>
@@ -74,6 +77,49 @@
         flex-direction: row; */
       }
 
+      .score-box{
+        float: left;
+        text-align: center;
+        margin-right: 10px;
+        margin-bottom: 10px;
+      }
+
+      table.minimalistBlack {
+        border: 3px solid #000000;
+        width: 100%;
+        text-align: left;
+        border-collapse: collapse;
+      }
+      table.minimalistBlack td, table.minimalistBlack th {
+        border: 1px solid #000000;
+        padding: 5px 4px;
+      }
+      table.minimalistBlack tbody td {
+        font-size: 13px;
+      }
+      table.minimalistBlack thead {
+        background: #CFCFCF;
+        background: -moz-linear-gradient(top, #dbdbdb 0%, #d3d3d3 66%, #CFCFCF 100%);
+        background: -webkit-linear-gradient(top, #dbdbdb 0%, #d3d3d3 66%, #CFCFCF 100%);
+        background: linear-gradient(to bottom, #dbdbdb 0%, #d3d3d3 66%, #CFCFCF 100%);
+        border-bottom: 3px solid #000000;
+      }
+      table.minimalistBlack thead th {
+        font-size: 15px;
+        font-weight: bold;
+        color: #000000;
+        text-align: left;
+      }
+      table.minimalistBlack tfoot {
+        font-size: 14px;
+        font-weight: bold;
+        color: #000000;
+        border-top: 3px solid #000000;
+      }
+      table.minimalistBlack tfoot td {
+        font-size: 14px;
+      }
+
     </style>
   </head>
   <body>
@@ -120,7 +166,7 @@
       </div>
       <div class='menu'>
         <h3>Scoreboard (Local only)</h3>
-        <table id='scoreboard'>
+        <table id='scoreboard' class='minimalistBlack'>
           <tr><th>Track</th><th>In Victory</th><th>In Defeat</th></tr>
         </table>
       </div>
@@ -224,6 +270,21 @@
           $('<td>').html(current.defeat != null ? current.defeat : 'NA').appendTo(row)
         }
 
+        function makeTable(heading, data){
+          let box = $('<div>').addClass('score-box')
+          box.append($('<h4>').text(heading))
+          let table = $('<table>').addClass('minimalistBlack').appendTo(box)
+          table.append($("<tr><th>Player</th><th>In Victory</th><th>In Defeat</th></tr>"))
+          for(let player of Object.keys(data)){
+            let row = $('<tr>').appendTo(table)
+            $('<td>').html(player).appendTo(row)
+            $('<td>').html(data[player][0]).appendTo(row)
+            $('<td>').html(data[player][1]).appendTo(row)
+
+          }
+          return box
+        }
+
         function loadLeaderboard(data){
           console.log(data)
           let board = $('#scoreTables');
@@ -231,16 +292,13 @@
             let file = Music[ii];
             let name = SongNames[ii];
             if(!data.hasOwnProperty(file)) continue;
-            $('<h4>').html(name).appendTo(board)
-            let table = $('<table>').appendTo(board)
-            table.append($("<tr><th>Player</th><th>In Victory</th><th>In Defeat</th></tr>"))
-            for(let player of Object.keys(data[file])){
-              let row = $('<tr>').appendTo(table)
-              $('<td>').html(player).appendTo(row)
-              $('<td>').html(data[file][player][0]).appendTo(row)
-              $('<td>').html(data[file][player][1]).appendTo(row)
+            $('<h3>').html(name).appendTo(board)
+            let group = $('<div>').appendTo(board)
+            for(let key of Object.keys(data[file])){
+              makeTable(key, data[file][key]).appendTo(group)
             }
           }
+          board.accordion()
         }
 
         //
