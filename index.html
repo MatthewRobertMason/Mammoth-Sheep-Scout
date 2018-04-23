@@ -78,6 +78,8 @@
         box-shadow: 5px 4px 6px 0px rgba(0,0,0,0.75);
         -webkit-box-shadow: 5px 4px 6px 0px rgba(0,0,0,0.75);
         -moz-box-shadow: 5px 4px 6px 0px rgba(0,0,0,0.75);
+        max-width: 500px;
+        max-height: 500px;
       }
 
       .credit {
@@ -337,6 +339,7 @@
             for(let key of Object.keys(data[file])){
               makeTable(key, data[file][key]).appendTo(group)
             }
+            group.append($("<div style='clear:both'></div>"))
           }
           board.accordion({
             heightStyle: "content" ,

@@ -304,28 +304,35 @@ class Game{
         // Add an html element over the game to display rockets
         this.rocketCounter = $('<div>').appendTo(container)
         this.rocketCounter.css({
+            padding: '2px',
+            textAlign: 'center',
+            verticalAlign: 'center',
             position: 'absolute',
             top: this.height - 60,
             left: (this.width - 40)/2,
             width: 40,
             height: 30,
-            border: '1px solid pink',
+            border: '1px solid #333333',
             zIndex: 300,
-            color: 'white'
+            color: 'black',
+            backgroundColor: '#77AA77',
         }).html(this.rockets)
 
         // Add an html element over the game to show a volume control
         let volumeBox = $('<div>').appendTo(container)
         volumeBox.css({
+            padding: '2px',
+            textAlign: 'center',
+            verticalAlign: 'center',
             position: 'absolute',
             top: this.height - 60,
             left: 0,
             width: 200,
             height: 30,
-            border: '1px solid pink',
+            border: '1px solid #333333',
             zIndex: 300,
-            color: 'white',
-            backgroundColor: '#777777',
+            color: 'black',
+            backgroundColor: '#77AA77',
         })
         let bar = $("<input id='game-volume' type='range' min='0' max='1000' value='500' onchange='VolumeSliderChange(arguments[0])'>")
         volumeBox.html(bar)
@@ -334,14 +341,18 @@ class Game{
         // Add score box
         this.scoreBox = $('<div>').appendTo(container)
         this.scoreBox.css({
+            padding: '2px',
+            textAlign: 'center',
+            verticalAlign: 'center',
             position: 'absolute',
             top: this.height - 60,
-            left: this.width - 50 - 2,
+            left: this.width - 50 - 6,
             width: 50,
             height: 30,
-            border: '1px solid pink',
+            border: '1px solid #333333',
             zIndex: 300,
-            color: 'white'
+            color: 'black',
+            backgroundColor: '#77AA77',
         }).html(this.score)
 
         this.scene = new THREE.Scene();
@@ -364,6 +375,20 @@ class Game{
         // gridHelper.position.z = 0.5
         // gridHelper.position.y = -1
         // this.scene.add(gridHelper);
+
+        // Add the background
+        {
+            let graphic = Sprites.get("Graphics/Background.png")
+            let material = new THREE.SpriteMaterial({map: graphic, color: 0xffffff});
+            let sprite = new THREE.Sprite(material)
+            this.scene.add(sprite)
+            sprite.center.y = 0
+            sprite.position.x = 0.5
+            sprite.position.y = -1
+            sprite.position.z = 1
+            sprite.scale.x = 1
+            sprite.scale.y = 1
+        }
 
         // Add the cannon
         {

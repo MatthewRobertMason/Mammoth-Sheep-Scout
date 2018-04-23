@@ -2,6 +2,7 @@
 
 var Sprites = new Map([
     ["Graphics/AirDropParachute.png", null],
+    ["Graphics/Background.png", null],
     ["Graphics/GunBase.png", null],
     ["Graphics/GunTurret.png", null],
     ["Graphics/Frame.png", null],
