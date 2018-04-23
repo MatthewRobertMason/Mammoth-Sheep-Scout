@@ -27,7 +27,7 @@ function randomChoice(array){
 class Star {
     constructor (game, scene, x, y){
         let graphic = Sprites.get("Graphics/Star.png")
-        let material = new THREE.SpriteMaterial({map: graphic, color: new THREE.Color(1, 1, 1)});
+        let material = new THREE.SpriteMaterial({map: graphic, color: new THREE.Color(1, 1, Math.random())});
         let sprite = new THREE.Sprite(material)
         this.sprite = sprite;
         sprite.position.x = x
@@ -40,7 +40,7 @@ class Star {
         this.material = material
     }
     update(game, delta){
-        this.material.color.b += (Math.random() * 2 - 1) * delta
+        this.material.color.b += (Math.random() * 2 - 1) * 3 * delta
         this.material.color.b = THREE.Math.clamp(this.material.color.b, 0.0, 1.0)
     }
 }
@@ -491,7 +491,7 @@ class Game{
 
         console.log(Date.now())
 
-        let randStars = Math.floor((Math.random() * 10) + 10);
+        let randStars = Math.floor((Math.random() * 10) + 15);
         for (let numStar = 0; numStar < randStars; numStar++){
             let star = new Star(this, this.scene, Math.random(), Math.random()/5);
             this.moving.add(star);
