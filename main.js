@@ -243,8 +243,7 @@ class Missile extends Targeted {
     constructor(params){
         params.rotation = -Math.PI/2
         super(params)
-        this.trail = null
-        this.trailTime = 0.1
+        this.trailTime = 0.08
     }
 }
 
@@ -492,13 +491,13 @@ class Game{
         start.z += direction.y * 0.04
         let end = new THREE.Vector3(x, 0, y)
 
-        let graphic = Sprites.get("Graphics/Rocket.png")
+        let graphic = Sprites.get("Graphics/Rocket2.png")
         let material = new THREE.SpriteMaterial({map: graphic, color: 0xffffff});
         let sprite = new THREE.Sprite(material)
         this.scene.add(sprite)
         sprite.position.copy(start)
-        sprite.scale.x = 1/40
-        sprite.scale.y = 1/40
+        sprite.scale.x = 1/20
+        sprite.scale.y = 1/20
 
         let rocket = new Missile({
             start: start,
