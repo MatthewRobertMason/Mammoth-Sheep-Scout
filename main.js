@@ -865,7 +865,7 @@ class Game{
         let username = Cookies.get('username')
         if(username && username != ''){
             $.ajax({
-              url: 'http://jam-stats.douglass.ca:5000/send',
+              url: 'https://jam-stats.douglass.ca:5000/send',
               jsonp: 'callback',
               dataType: 'jsonp',
               data: {
