@@ -28,6 +28,34 @@
         background-color: #f7f7f7;
       }
 
+      button {
+        display: inline-block;
+        padding: 0.5em 3em;
+        border: 0.10em solid #003eff;
+        margin: 0 0.3em 0.3em 0;
+        box-sizing: border-box;
+        text-decoration: none;
+        text-transform: uppercase;
+        font-weight: 400;
+        color: white;
+        text-align: center;
+        transition: all 0.15s;
+        background-color: #007fff;
+      }
+
+      button:hover{
+        color: black;
+        background-color: #4CA5FF;
+        border-color: #EEEEEE;
+        cursor: pointer;
+      }
+
+      button:active{
+        color: black;
+        border-color: #BBBBBB;
+        background-color: #003F7F;
+      }
+
       #main {
         display: none;
       }
@@ -199,7 +227,7 @@
 
       <div class='menu'>
         <b> Disclaimer: </b> This leader board operates on the honour system.
-        <div>Enter a name to use for the jam's scoreboard <input id='username' type='text'><button onclick='SetName()'>Save</button></div>
+        <div>Enter a name to use for the jam's scoreboard <input id='username' type='text'> <button onclick='SetName()'>Save</button></div>
         <h3>Scoreboard (Jam)</h3>
         <div id='scoreTables'></div>
       </div>
