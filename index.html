@@ -227,7 +227,7 @@
 
       <div class='menu'>
         <b> Disclaimer: </b> This leader board operates on the honour system.
-        <div>Enter a name to use for the jam's scoreboard <input id='username' type='text'> <button onclick='SetName()'>Save</button></div>
+        <div>Enter a name to use for the jam's scoreboard <input id='username' type='text' onkeyup='MaybeSetName(arguments[0])'> <button onclick='SetName()'>Save</button></div>
         <h3>Scoreboard (Jam)</h3>
         <div id='scoreTables'></div>
       </div>
@@ -322,6 +322,12 @@
     </div>
 
     <script>
+
+      function MaybeSetName(event){
+        if (event.keyCode == 13) {
+          SetName()
+        }
+      };
 
       function SetName(){
         let value = $('#username').val()
