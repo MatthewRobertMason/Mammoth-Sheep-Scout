@@ -459,10 +459,12 @@ class Game{
         ]
 
         // Given the velocity, and distance, we know the delay
-        console.log(hitBox, this.noteSpeed)
+        console.log("note speed: " + this.noteSpeed)
+        //console.log(hitBox, this.noteSpeed)
         this.noteDelay = hitBox/this.noteSpeed
-        console.log(this.noteDelay)
-        PlayMusic(this.audioData.buffer)
+        //console.log(this.noteDelay)
+        console.log("note delay: " + this.noteDelay)
+        //PlayMusic(this.audioData.buffer)
         this.startTime = audioContext.currentTime;
         this.lastFrameSample = Math.floor(this.noteDelay * this.audioData.buffer.sampleRate)
     }
