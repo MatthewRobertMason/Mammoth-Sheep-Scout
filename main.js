@@ -249,6 +249,7 @@ class Missile extends Targeted {
 
 class Game{
     constructor(container, audioData, soundsData){
+        $('body').css({backgroundColor: '#111111'})
         this.hitZone = 0.08
         this.rockDamage = 0.4
         this.prizeDamage = 0.1
@@ -285,11 +286,16 @@ class Game{
         this.container = container;
         this.container.focus()
         this.container.css({
-            position: 'absolute',
-            top: 0,
-            left: 0,
+            position: 'relative',
+            // top: 0,
+            // left: 0,
             width: this.width + 'px',
-            height: this.height + 'px'
+            height: this.height + 'px',
+            zIndex: 200,
+            marginLeft: 'auto',
+            marginRight: 'auto',
+            width: this.width,
+            height: this.height,
         })
 
         this.renderer = new THREE.WebGLRenderer({
@@ -297,8 +303,11 @@ class Game{
         });
         this.renderer.setSize(this.width, this.height);
         this.container.append(this.renderer.domElement)
-        $(this.container).css({
-            zIndex: 200
+        $(this.renderer.domElement).css({
+            position: 'relative',
+            top: 0,
+            left: 0,
+            zIndex: 200,
         })
 
         // Add an html element over the game to display rockets
@@ -346,7 +355,7 @@ class Game{
             verticalAlign: 'center',
             position: 'absolute',
             top: this.height - 60,
-            left: this.width - 50 - 6,
+            right: 0,
             width: 50,
             height: 30,
             border: '1px solid #333333',
