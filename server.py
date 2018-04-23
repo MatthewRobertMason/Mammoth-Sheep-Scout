@@ -21,11 +21,31 @@ def jsonp(func):
     return decorated_function
 
 
+def best_rows(data, number, index):
+    data.sort(key=lambda row: row[1][index], reverse=True)
+    return data[:number], data[number:]
+
+
+def choose_best(data):
+    data = list(data.items())
+    best, data = best_rows(data, 5, 0)
+    worst, _ = best_rows(data, 3, 1)
+    return best + worst
+
+
+def format_difficulty(data):
+    return {diff: choose_best(row) for diff, row in data.items()}
+
+
+def format_leaderboard(data):
+    return {song: format_difficulty(row) for song, row in data.items()}
+
+
 @app.route("/board")
 @jsonp
 def board():
     try:
-        return jsonify(json.load(open('important-data.json', 'r')))
+        return jsonify(format_leaderboard(json.load(open('important-data.json', 'r'))))
     except Exception as error:
         print(error)
         return jsonify({})
