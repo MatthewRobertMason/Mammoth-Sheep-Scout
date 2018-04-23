@@ -76,6 +76,10 @@
         display: none;
       }
 
+      #warning {
+        display: none;
+      }
+
       #loading {
         display: none;
       }
@@ -323,7 +327,27 @@
       </div>
     </div>
 
+    <div id='warning'>
+      <div class="shadowbox"></div>
+      <div class="overlay">
+        <h4> Wait! </h4>
+
+        <p> Some people may have trouble with the audio syncing to the beat in this game.
+          We recommend you try the metronome track to test your system. </p>
+
+        <p> If there are syncing issues, using a different browser seems to work on some systems. </p>
+
+        <p> <button onclick="$('#warning').css({display: 'none'})">Noted.</button> </p>
+
+      </div>
+    </div>
+
     <script>
+
+      if(!Cookies.get('show-warning')){
+        $('#warning').css({display: 'block'})
+        Cookies.set('show-warning', false)
+      }
 
       function MaybeSetName(event){
         if (event.keyCode == 13) {
