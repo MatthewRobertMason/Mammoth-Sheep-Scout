@@ -8,6 +8,7 @@ var Music = [
     "Audio/Motherlode.mp3",
     "Audio/Mega Hyper Ultrastorm.mp3",
     "Audio/Gregorian Chant.mp3",
+    "Audio/Metronome.mp3",
 ];
 
 var SongNames = [
@@ -18,6 +19,7 @@ var SongNames = [
     "Motherlode (90 BPM, 3:57)",
     "Mega Hyper Ultrastorm (220 BPM, 3:13)",
     "Gregorian Chant (? BPM, 3:14)",
+    "Metronome 60 BPM, 1:00",
 ]
 
 var Sounds = new Map([
@@ -166,6 +168,7 @@ function PlayMusic(buffer) {
 // }
 
 function analyzeMusic(buffer, callback, difficultyMultiplier){
+    console.dir("analyzeMusic")
     let high = null
     let low = null;
     let band = null;
