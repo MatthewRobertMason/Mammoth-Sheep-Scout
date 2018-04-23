@@ -39,8 +39,9 @@ class Star {
         scene.add(sprite)
         this.material = material
     }
-    update(){
-        this.material.color = new THREE.Color(1 - Math.random() * 0.5, 1 - Math.random() * 0.5, 1 - Math.random() * 0.5);
+    update(game, delta){
+        this.material.color.b += (Math.random() * 2 - 1) * delta
+        this.material.color.b = THREE.Math.clamp(this.material.color.b, 0.0, 1.0)
     }
 }
 
