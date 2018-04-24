@@ -329,6 +329,7 @@ class Game{
             left: 0,
             zIndex: 200,
         })
+        this.mouseTargets = [$(this.renderer.domElement)]
 
         // Add an html element over the game to display rockets
         this.rocketCounter = $('<div>').appendTo(container)
@@ -449,10 +450,10 @@ class Game{
         // Add the game objects
         this.cities = []
         this.moving = new Set()
-        this.newCity(0.1, 0.9)
-        this.newCity(0.3, 0.9)
-        this.newCity(0.7, 0.9)
-        this.newCity(0.9, 0.9)
+        this.newCity(1, 0.1, 0.9)
+        this.newCity(2, 0.3, 0.9)
+        this.newCity(3, 0.7, 0.9)
+        this.newCity(4, 0.9, 0.9)
 
         this.rocks = new Set()
         this.prizes = new Set()
@@ -498,7 +499,23 @@ class Game{
         }
     }
 
-    newCity(x, y){
+    newCity(numeral, x, y){
+        this.mouseTargets.push($('<div>').appendTo(this.container).css({
+            textAlign: 'center',
+            verticalAlign: 'center',
+            position: 'absolute',
+            top: this.height * (y - 0.115 - 0.5 * this.hitZone),
+            left: this.width * x,
+            width: 30,
+            height: 30,
+            transform: 'translate(-50%, -50%)',
+            zIndex: 300,
+            color: 'white',
+            fontWeight: 400,
+            fontSize: '25px',
+            opacity: 0.7,
+            cursor: 'default',
+        }).html(numeral).disableSelection())
 
         let zone_graphic = Sprites.get("Graphics/Frame.png")
         let zone_material = new THREE.SpriteMaterial({map: zone_graphic, color: 0xFFAAAA});
@@ -819,8 +836,9 @@ class Game{
     onMouseMove(event){
         if(!this.running) return
 
-        let x = event.offsetX / this.width
-        let y = event.offsetY / this.height
+        let off = this.container.offset()
+        let x = (event.pageX - off.left) / this.width
+        let y = (event.pageY - off.top) / this.height
 
         let mouse = new THREE.Vector2(x, y)
         this.mouse = mouse;
@@ -830,11 +848,13 @@ class Game{
     }
 
     onMouseDown(event){
-        if(event.button != 0 || event.target.tagName != 'CANVAS') return;
+        if(!this.mouseTargets.map(t => t.is($(event.target))).reduce((a, b) => (a || b))) return;
+        if(event.button != 0) return;
         if(!this.running) return
 
-        let x = event.offsetX / this.width
-        let y = event.offsetY / this.height
+        let off = this.container.offset()
+        let x = (event.pageX - off.left) / this.width
+        let y = (event.pageY - off.top) / this.height
         this.newMissile(x, y)
     }
 
